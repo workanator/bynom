@@ -1,21 +1,26 @@
 package bynom
 
-// ResetSignals sets all signal variables in dst to false.
+// React performs some logic on signal raised.
+type React func(bool) error
+
+// Signal invokes all signal handlers passing them the value v.
 // The function does no affect the plate read position.
-func ResetSignals(dst ...*bool) Nom {
-	return func(p Plate) error {
-		for _, signal := range dst {
-			*signal = false
+// If any signal handler from reacts returns non-nil error the function fails with that error.
+func Signal(v bool, reacts ...React) Nom {
+	return func(Plate) (err error) {
+		for _, r := range reacts {
+			if err = r(v); err != nil {
+				break
+			}
 		}
-		return nil
+		return
 	}
 }
 
-// SetSignal sets the signal variable to true.
-// The function does no affect the plate read position.
-func SetSignal(dst *bool) Nom {
-	return func(p Plate) error {
-		*dst = true
+// ReflectBool writes the signal value into the bool variable.
+func ReflectBool(p *bool) React {
+	return func(v bool) error {
+		*p = v
 		return nil
 	}
 }

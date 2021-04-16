@@ -10,33 +10,33 @@ func TestRule_Eat(t *testing.T) {
 	)
 
 	var r = NewRule(
-		ResetSignals(&square, &curly),
+		Signal(false, ReflectBool(&square), ReflectBool(&curly)),
 		WhileOneOf(' ', '\t'),
 		Switch(
 			When(
 				Expect('['),
 				Take(
-					&name,
+					DstBytes(&name),
 					WhileNot(']'),
 				),
 				Expect(']'),
-				SetSignal(&square),
+				Signal(true, ReflectBool(&square)),
 			),
 			When(
 				Expect('{'),
 				Take(
-					&name,
+					DstBytes(&name),
 					WhileNot('}'),
 				),
 				Expect('}'),
-				SetSignal(&curly),
+				Signal(true, ReflectBool(&curly)),
 			),
 		),
 		WhileOneOf(' ', '\t'),
 		Expect('='),
 		WhileOneOf(' ', '\t'),
 		Take(
-			&value,
+			DstBytes(&value),
 			Any(),
 		),
 	)
