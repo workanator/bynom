@@ -8,8 +8,8 @@ import (
 
 	"github.com/workanator/bynom"
 	"github.com/workanator/bynom/dish"
-	"github.com/workanator/bynom/into"
 	"github.com/workanator/bynom/nom"
+	"github.com/workanator/bynom/nom/into"
 )
 
 func TestRule_Eat(t *testing.T) {
@@ -23,32 +23,32 @@ func TestRule_Eat(t *testing.T) {
 	)
 
 	var r = bynom.NewRule(
-		bynom.Signal(false, bynom.ReflectBool(&square), bynom.ReflectBool(&curly)),
+		nom.Signal(false, nom.ReflectBool(&square), nom.ReflectBool(&curly)),
 		nom.WhileOneOf(' ', '\t'),
-		bynom.Switch(
-			bynom.When(
+		nom.Switch(
+			nom.When(
 				nom.Expect('['),
-				bynom.Take(
+				nom.Take(
 					into.Bytes(&name),
 					nom.WhileNot(']'),
 				),
 				nom.Expect(']'),
-				bynom.Signal(true, bynom.ReflectBool(&square)),
+				nom.Signal(true, nom.ReflectBool(&square)),
 			),
-			bynom.When(
+			nom.When(
 				nom.Expect('{'),
-				bynom.Take(
+				nom.Take(
 					into.Bytes(&name),
 					nom.WhileNot('}'),
 				),
 				nom.Expect('}'),
-				bynom.Signal(true, bynom.ReflectBool(&curly)),
+				nom.Signal(true, nom.ReflectBool(&curly)),
 			),
 		),
 		nom.WhileOneOf(' ', '\t'),
 		nom.Expect('='),
 		nom.WhileOneOf(' ', '\t'),
-		bynom.Take(
+		nom.Take(
 			into.Bytes(&value),
 			nom.Any(),
 		),
