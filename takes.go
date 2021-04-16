@@ -32,8 +32,8 @@ func Take(fn Convert, noms ...Nom) Nom {
 	}
 }
 
-// DstBytes assigns byte slice to the variable p.
-func DstBytes(p *[]byte) Convert {
+// IntoBytes assigns byte slice to the variable p.
+func IntoBytes(p *[]byte) Convert {
 	return func(b []byte) error {
 		*p = b
 		return nil

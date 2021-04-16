@@ -16,7 +16,7 @@ func TestRule_Eat(t *testing.T) {
 			When(
 				Expect('['),
 				Take(
-					DstBytes(&name),
+					IntoBytes(&name),
 					WhileNot(']'),
 				),
 				Expect(']'),
@@ -25,7 +25,7 @@ func TestRule_Eat(t *testing.T) {
 			When(
 				Expect('{'),
 				Take(
-					DstBytes(&name),
+					IntoBytes(&name),
 					WhileNot('}'),
 				),
 				Expect('}'),
@@ -36,7 +36,7 @@ func TestRule_Eat(t *testing.T) {
 		Expect('='),
 		WhileOneOf(' ', '\t'),
 		Take(
-			DstBytes(&value),
+			IntoBytes(&value),
 			Any(),
 		),
 	)
