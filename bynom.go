@@ -8,7 +8,8 @@ type Plate interface {
 	SeekPosition(pos int) (err error)
 }
 
-type Slice interface {
-	Take(from Plate) (p []byte, err error)
-	Skip(from Plate) (err error)
+type Eater interface {
+	Eat(p Plate) (err error)
 }
+
+type Nom func(Plate) error
