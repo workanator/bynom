@@ -2,6 +2,8 @@ package bynom
 
 import "io"
 
+// Expect reads the next byte from the plate and tests it against r.
+// If the byte read does not equal r the function will return ErrExpectationFailed.
 func Expect(r byte) Nom {
 	return func(p Plate) (err error) {
 		var b byte
@@ -20,6 +22,8 @@ func Expect(r byte) Nom {
 	}
 }
 
+// ExpectOneOf reads the next byte from the plate and tests it against the set set.
+// If the byte read does not belong to the set the function will return ErrExpectationFailed.
 func ExpectOneOf(set ...byte) Nom {
 	return func(p Plate) (err error) {
 		var b byte
@@ -40,6 +44,8 @@ func ExpectOneOf(set ...byte) Nom {
 	}
 }
 
+// ExpectNot reads the next byte from the plate and tests it against r.
+// If the byte read equals r the function will return ErrExpectationFailed.
 func ExpectNot(r byte) Nom {
 	return func(p Plate) (err error) {
 		var b byte
@@ -58,6 +64,8 @@ func ExpectNot(r byte) Nom {
 	}
 }
 
+// ExpectNotOneOf reads the next byte from the plate and tests it against the set set.
+// If the byte read belongs to the set the function will return ErrExpectationFailed.
 func ExpectNotOneOf(set ...byte) Nom {
 	return func(p Plate) (err error) {
 		var b byte
@@ -78,6 +86,9 @@ func ExpectNotOneOf(set ...byte) Nom {
 	}
 }
 
+// While reads bytes from the plate while they equal r.
+// The function reads while the condition met or io.EOF encountered.
+// The function returns nil when io.EOF encountered.
 func While(r byte) Nom {
 	return func(p Plate) (err error) {
 		for {
@@ -101,6 +112,9 @@ func While(r byte) Nom {
 	}
 }
 
+// WhileOneOf reads bytes from the plate while they belong to the set set.
+// The function reads while the condition met or io.EOF encountered.
+// The function returns nil when io.EOF encountered.
 func WhileOneOf(set ...byte) Nom {
 	return func(p Plate) (err error) {
 		for {
@@ -132,6 +146,9 @@ func WhileOneOf(set ...byte) Nom {
 	}
 }
 
+// WhileNot reads bytes from the plate while they do not equal r.
+// The function reads while the condition met or io.EOF encountered.
+// The function returns nil when io.EOF encountered.
 func WhileNot(r byte) Nom {
 	return func(p Plate) (err error) {
 		for {
@@ -155,6 +172,9 @@ func WhileNot(r byte) Nom {
 	}
 }
 
+// WhileNotOneOf reads bytes from the plate while they do not belong to the set set.
+// The function reads while the condition met or io.EOF encountered.
+// The function returns nil when io.EOF encountered.
 func WhileNotOneOf(set ...byte) Nom {
 	return func(p Plate) (err error) {
 	Loop:
@@ -182,6 +202,8 @@ func WhileNotOneOf(set ...byte) Nom {
 	}
 }
 
+// Any reads bytes from the plate until io.EOF encountered.
+// Any return nil when io.EOF encountered.
 func Any() Nom {
 	return func(p Plate) (err error) {
 		for {
