@@ -1,5 +1,7 @@
 package bynom
 
+// Switch takes the result of the first parser from noms which finished without error.
+// If all noms failed the function will return the last error encountered.
 func Switch(noms ...Nom) Nom {
 	return func(p Plate) (err error) {
 		var startPos int
@@ -23,6 +25,8 @@ func Switch(noms ...Nom) Nom {
 	}
 }
 
+// When implements conditional parsing. When the parser test finishes without error
+// noms run. If one of parsers in noms fails the function fails with that error.
 func When(test Nom, noms ...Nom) Nom {
 	return func(p Plate) (err error) {
 		var startPos int
