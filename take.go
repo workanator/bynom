@@ -31,11 +31,3 @@ func Take(fn Convert, noms ...Nom) Nom {
 		return fn(s)
 	}
 }
-
-// IntoBytes assigns byte slice to the variable p.
-func IntoBytes(p *[]byte) Convert {
-	return func(b []byte) error {
-		*p = b
-		return nil
-	}
-}

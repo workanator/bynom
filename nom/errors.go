@@ -1,4 +1,4 @@
-package bynom
+package nom
 
 import "fmt"
 
