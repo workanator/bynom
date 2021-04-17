@@ -13,18 +13,23 @@ import (
 )
 
 func TestRule_Eat(t *testing.T) {
+	const (
+		squareBrackets State = iota + 1
+		curlyBrackets
+	)
+
 	var (
-		randomName    = strconv.Itoa(os.Getpid())
-		randomValue   = time.Now().String()
-		pattern       = "{" + randomName + "} = " + randomValue
-		p             = dish.NewBytes([]byte(pattern))
-		name, value   []byte
-		square, curly bool
+		randomName  = strconv.Itoa(os.Getpid())
+		randomValue = time.Now().String()
+		pattern     = "{" + randomName + "} = " + randomValue
+		p           = dish.NewBytes([]byte(pattern))
+		name, value []byte
+		brackets    State
 	)
 
 	var r = bynom.NewRule(
-		Signal(false, ReflectBool(&square), ReflectBool(&curly)),
-		WhileOneOf(' ', '\t'),
+		Signal(0, ReplaceState(&brackets)),
+		Optional(WhileOneOf(' ', '\t')),
 		Switch(
 			When(
 				Expect('['),
@@ -33,7 +38,7 @@ func TestRule_Eat(t *testing.T) {
 					WhileNot(']'),
 				),
 				Expect(']'),
-				Signal(true, ReflectBool(&square)),
+				Signal(squareBrackets, ReplaceState(&brackets)),
 			),
 			When(
 				Expect('{'),
@@ -42,12 +47,12 @@ func TestRule_Eat(t *testing.T) {
 					WhileNot('}'),
 				),
 				Expect('}'),
-				Signal(true, ReflectBool(&curly)),
+				Signal(curlyBrackets, ReplaceState(&brackets)),
 			),
 		),
-		WhileOneOf(' ', '\t'),
+		Optional(WhileOneOf(' ', '\t')),
 		Expect('='),
-		WhileOneOf(' ', '\t'),
+		Optional(WhileOneOf(' ', '\t')),
 		Take(
 			into.Bytes(&value),
 			Any(),
@@ -59,11 +64,8 @@ func TestRule_Eat(t *testing.T) {
 		t.Fatalf("Failed to eat: %v\n", err)
 	}
 
-	if square {
-		t.Fatal("Expected curly signal, have square")
-	}
-	if !curly {
-		t.Fatal("Expected curly signal, have no signal")
+	if brackets != curlyBrackets {
+		t.Fatal("Expected curly brackets")
 	}
 	if string(name) != randomName {
 		t.Fatalf("Expected name %s, have %s\n", randomName, string(name))
