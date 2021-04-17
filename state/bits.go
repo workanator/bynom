@@ -28,21 +28,26 @@ func (bits *Bits) Reset(v int) error {
 }
 
 // AllSet tests if the instance has all bits v set to 1.
-func (bits Bits) AllSet(v int) bool {
-	return bits&Bits(v) == Bits(v)
+func (bits *Bits) AllSet(v int) bool {
+	return *bits&Bits(v) == Bits(v)
 }
 
 // AnySet tests if the instance has at least on bit from bits v set to 1.
-func (bits Bits) AnySet(v int) bool {
-	return bits&Bits(v) > 0
+func (bits *Bits) AnySet(v int) bool {
+	return *bits&Bits(v) > 0
+}
+
+// NothingSet tests if the instance has all bits v set to 0.
+func (bits *Bits) NothingSet(v int) bool {
+	return *bits&Bits(v) == 0
 }
 
 // Equal tests if the instance equals to the value v.
-func (bits Bits) Equal(v int) bool {
-	return bits == Bits(v)
+func (bits *Bits) Equal(v int) bool {
+	return *bits == Bits(v)
 }
 
 // Int returns the instance as int value.
-func (bits Bits) Int() int {
-	return int(bits)
+func (bits *Bits) Int() int {
+	return int(*bits)
 }

@@ -9,11 +9,16 @@ import (
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func While(r byte) Nom {
 	return func(p Plate) (err error) {
-		var count int
+		var (
+			count int
+			b     byte
+		)
 		for {
-			var b byte
 			if b, err = p.PeekByte(); err != nil {
 				if err == io.EOF {
+					if count == 0 {
+						return io.ErrUnexpectedEOF
+					}
 					return nil
 				}
 				return
@@ -28,7 +33,10 @@ func While(r byte) Nom {
 			count++
 		}
 		if count == 0 {
-			return io.ErrUnexpectedEOF
+			return ErrExpectationFailed{
+				Expected: []byte{r},
+				Have:     b,
+			}
 		}
 
 		return
@@ -40,11 +48,16 @@ func While(r byte) Nom {
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileOneOf(set ...byte) Nom {
 	return func(p Plate) (err error) {
-		var count int
+		var (
+			count int
+			b     byte
+		)
 		for {
-			var b byte
 			if b, err = p.PeekByte(); err != nil {
 				if err == io.EOF {
+					if count == 0 {
+						return io.ErrUnexpectedEOF
+					}
 					return nil
 				}
 				return
@@ -67,7 +80,10 @@ func WhileOneOf(set ...byte) Nom {
 			count++
 		}
 		if count == 0 {
-			return io.ErrUnexpectedEOF
+			return ErrExpectationFailed{
+				Expected: set,
+				Have:     b,
+			}
 		}
 
 		return
@@ -79,11 +95,16 @@ func WhileOneOf(set ...byte) Nom {
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileNot(r byte) Nom {
 	return func(p Plate) (err error) {
-		var count int
+		var (
+			count int
+			b     byte
+		)
 		for {
-			var b byte
 			if b, err = p.PeekByte(); err != nil {
 				if err == io.EOF {
+					if count == 0 {
+						return io.ErrUnexpectedEOF
+					}
 					return nil
 				}
 				return
@@ -98,7 +119,11 @@ func WhileNot(r byte) Nom {
 			count++
 		}
 		if count == 0 {
-			return io.ErrUnexpectedEOF
+			return ErrExpectationFailed{
+				Expected: []byte{r},
+				Have:     b,
+				Not:      true,
+			}
 		}
 
 		return
@@ -110,12 +135,17 @@ func WhileNot(r byte) Nom {
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileNotOneOf(set ...byte) Nom {
 	return func(p Plate) (err error) {
-		var count int
+		var (
+			count int
+			b     byte
+		)
 	Loop:
 		for {
-			var b byte
 			if b, err = p.PeekByte(); err != nil {
 				if err == io.EOF {
+					if count == 0 {
+						return io.ErrUnexpectedEOF
+					}
 					return nil
 				}
 				return
@@ -133,7 +163,11 @@ func WhileNotOneOf(set ...byte) Nom {
 			count++
 		}
 		if count == 0 {
-			return io.ErrUnexpectedEOF
+			return ErrExpectationFailed{
+				Expected: set,
+				Have:     b,
+				Not:      true,
+			}
 		}
 
 		return

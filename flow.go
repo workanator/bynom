@@ -49,6 +49,32 @@ func When(test Nom, noms ...Nom) Nom {
 	}
 }
 
+// WhenNot implements conditional parsing. When the parser test finishes with non-nil error
+// noms run. If one of parsers in noms fails the function fails with that error.
+func WhenNot(test Nom, noms ...Nom) Nom {
+	return func(p Plate) (err error) {
+		var startPos int
+		if startPos, err = p.TellPosition(); err != nil {
+			return
+		}
+
+		if err = test(p); err == nil {
+			_ = p.SeekPosition(startPos)
+			return
+		} else {
+			err = nil
+		}
+
+		for _, nom := range noms {
+			if err = nom(p); err != nil {
+				break
+			}
+		}
+
+		return
+	}
+}
+
 // Optional runs all parsers noms until all finished or at least one failed.
 // If at least one of parsers return non-nil error the function
 // will revert back the read position in the plate and return nil.
@@ -90,6 +116,19 @@ func Repeat(n int, noms ...Nom) Nom {
 		}
 		if err != nil {
 			_ = p.SeekPosition(startPos)
+		}
+
+		return
+	}
+}
+
+// Group runs all parsers noms until all finished or at least one failed.
+func Group(noms ...Nom) Nom {
+	return func(p Plate) (err error) {
+		for _, nom := range noms {
+			if err = nom(p); err != nil {
+				break
+			}
 		}
 
 		return
