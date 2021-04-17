@@ -10,11 +10,12 @@ import (
 	. "github.com/workanator/bynom"
 	"github.com/workanator/bynom/dish"
 	"github.com/workanator/bynom/into"
+	"github.com/workanator/bynom/state"
 )
 
 func TestRule_Eat(t *testing.T) {
 	const (
-		squareBrackets State = iota + 1
+		squareBrackets int = iota + 1
 		curlyBrackets
 	)
 
@@ -24,11 +25,11 @@ func TestRule_Eat(t *testing.T) {
 		pattern     = "{" + randomName + "} = " + randomValue
 		p           = dish.NewBytes([]byte(pattern))
 		name, value []byte
-		brackets    State
+		brackets    = state.NewBits()
 	)
 
 	var r = bynom.NewRule(
-		Signal(0, ReplaceState(&brackets)),
+		ChangeState(0, brackets.Replace),
 		Optional(WhileOneOf(' ', '\t')),
 		Switch(
 			When(
@@ -38,7 +39,7 @@ func TestRule_Eat(t *testing.T) {
 					WhileNot(']'),
 				),
 				Expect(']'),
-				Signal(squareBrackets, ReplaceState(&brackets)),
+				ChangeState(squareBrackets, brackets.Replace),
 			),
 			When(
 				Expect('{'),
@@ -47,7 +48,7 @@ func TestRule_Eat(t *testing.T) {
 					WhileNot('}'),
 				),
 				Expect('}'),
-				Signal(curlyBrackets, ReplaceState(&brackets)),
+				ChangeState(curlyBrackets, brackets.Replace),
 			),
 		),
 		Optional(WhileOneOf(' ', '\t')),
@@ -64,7 +65,7 @@ func TestRule_Eat(t *testing.T) {
 		t.Fatalf("Failed to eat: %v\n", err)
 	}
 
-	if brackets != curlyBrackets {
+	if !brackets.Equal(curlyBrackets) {
 		t.Fatal("Expected curly brackets")
 	}
 	if string(name) != randomName {

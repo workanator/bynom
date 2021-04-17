@@ -23,7 +23,7 @@ func (e ErrExpectationFailed) Error() string {
 
 // ErrStateTestFailed notifies that state test against value Assert failed.
 type ErrStateTestFailed struct {
-	Assert State
+	Assert int
 }
 
 func (e ErrStateTestFailed) Error() string {
