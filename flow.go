@@ -1,11 +1,9 @@
-package nom
-
-import "github.com/workanator/bynom"
+package bynom
 
 // Switch takes the result of the first parser from noms which finished without error.
 // If all noms failed the function will return the last error encountered.
-func Switch(noms ...bynom.Nom) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func Switch(noms ...Nom) Nom {
+	return func(p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(); err != nil {
 			return
@@ -29,8 +27,8 @@ func Switch(noms ...bynom.Nom) bynom.Nom {
 
 // When implements conditional parsing. When the parser test finishes without error
 // noms run. If one of parsers in noms fails the function fails with that error.
-func When(test bynom.Nom, noms ...bynom.Nom) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func When(test Nom, noms ...Nom) Nom {
+	return func(p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(); err != nil {
 			return
@@ -54,8 +52,8 @@ func When(test bynom.Nom, noms ...bynom.Nom) bynom.Nom {
 // Optional runs all parsers noms until all finished or at least one failed.
 // If at least one of parsers return non-nil error the function
 // will revert back the read position in the plate and return nil.
-func Optional(noms ...bynom.Nom) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func Optional(noms ...Nom) Nom {
+	return func(p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(); err != nil {
 			return

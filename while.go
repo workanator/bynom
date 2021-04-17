@@ -1,16 +1,14 @@
-package nom
+package bynom
 
 import (
 	"io"
-
-	"github.com/workanator/bynom"
 )
 
 // While reads bytes from the plate while they equal r.
 // The function reads while the condition met or io.EOF encountered.
 // The function returns nil when io.EOF encountered.
-func While(r byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func While(r byte) Nom {
+	return func(p Plate) (err error) {
 		for {
 			var b byte
 			if b, err = p.PeekByte(); err != nil {
@@ -35,8 +33,8 @@ func While(r byte) bynom.Nom {
 // WhileOneOf reads bytes from the plate while they belong to the set set.
 // The function reads while the condition met or io.EOF encountered.
 // The function returns nil when io.EOF encountered.
-func WhileOneOf(set ...byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func WhileOneOf(set ...byte) Nom {
+	return func(p Plate) (err error) {
 		for {
 			var b byte
 			if b, err = p.PeekByte(); err != nil {
@@ -69,8 +67,8 @@ func WhileOneOf(set ...byte) bynom.Nom {
 // WhileNot reads bytes from the plate while they do not equal r.
 // The function reads while the condition met or io.EOF encountered.
 // The function returns nil when io.EOF encountered.
-func WhileNot(r byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func WhileNot(r byte) Nom {
+	return func(p Plate) (err error) {
 		for {
 			var b byte
 			if b, err = p.PeekByte(); err != nil {
@@ -95,8 +93,8 @@ func WhileNot(r byte) bynom.Nom {
 // WhileNotOneOf reads bytes from the plate while they do not belong to the set set.
 // The function reads while the condition met or io.EOF encountered.
 // The function returns nil when io.EOF encountered.
-func WhileNotOneOf(set ...byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func WhileNotOneOf(set ...byte) Nom {
+	return func(p Plate) (err error) {
 	Loop:
 		for {
 			var b byte

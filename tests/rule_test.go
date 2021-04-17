@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/workanator/bynom"
+	. "github.com/workanator/bynom"
 	"github.com/workanator/bynom/dish"
-	"github.com/workanator/bynom/nom"
-	"github.com/workanator/bynom/nom/into"
+	"github.com/workanator/bynom/into"
 )
 
 func TestRule_Eat(t *testing.T) {
@@ -23,34 +23,34 @@ func TestRule_Eat(t *testing.T) {
 	)
 
 	var r = bynom.NewRule(
-		nom.Signal(false, nom.ReflectBool(&square), nom.ReflectBool(&curly)),
-		nom.WhileOneOf(' ', '\t'),
-		nom.Switch(
-			nom.When(
-				nom.Expect('['),
-				nom.Take(
+		Signal(false, ReflectBool(&square), ReflectBool(&curly)),
+		WhileOneOf(' ', '\t'),
+		Switch(
+			When(
+				Expect('['),
+				Take(
 					into.Bytes(&name),
-					nom.WhileNot(']'),
+					WhileNot(']'),
 				),
-				nom.Expect(']'),
-				nom.Signal(true, nom.ReflectBool(&square)),
+				Expect(']'),
+				Signal(true, ReflectBool(&square)),
 			),
-			nom.When(
-				nom.Expect('{'),
-				nom.Take(
+			When(
+				Expect('{'),
+				Take(
 					into.Bytes(&name),
-					nom.WhileNot('}'),
+					WhileNot('}'),
 				),
-				nom.Expect('}'),
-				nom.Signal(true, nom.ReflectBool(&curly)),
+				Expect('}'),
+				Signal(true, ReflectBool(&curly)),
 			),
 		),
-		nom.WhileOneOf(' ', '\t'),
-		nom.Expect('='),
-		nom.WhileOneOf(' ', '\t'),
-		nom.Take(
+		WhileOneOf(' ', '\t'),
+		Expect('='),
+		WhileOneOf(' ', '\t'),
+		Take(
 			into.Bytes(&value),
-			nom.Any(),
+			Any(),
 		),
 	)
 

@@ -1,11 +1,9 @@
-package nom
-
-import "github.com/workanator/bynom"
+package bynom
 
 // Expect reads the next byte from the plate and tests it against r.
 // If the byte read does not equal r the function will return ErrExpectationFailed.
-func Expect(r byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func Expect(r byte) Nom {
+	return func(p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(); err != nil {
 			return
@@ -24,8 +22,8 @@ func Expect(r byte) bynom.Nom {
 
 // ExpectOneOf reads the next byte from the plate and tests it against the set set.
 // If the byte read does not belong to the set the function will return ErrExpectationFailed.
-func ExpectOneOf(set ...byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func ExpectOneOf(set ...byte) Nom {
+	return func(p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(); err != nil {
 			return
@@ -46,8 +44,8 @@ func ExpectOneOf(set ...byte) bynom.Nom {
 
 // ExpectNot reads the next byte from the plate and tests it against r.
 // If the byte read equals r the function will return ErrExpectationFailed.
-func ExpectNot(r byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func ExpectNot(r byte) Nom {
+	return func(p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(); err != nil {
 			return
@@ -66,8 +64,8 @@ func ExpectNot(r byte) bynom.Nom {
 
 // ExpectNotOneOf reads the next byte from the plate and tests it against the set set.
 // If the byte read belongs to the set the function will return ErrExpectationFailed.
-func ExpectNotOneOf(set ...byte) bynom.Nom {
-	return func(p bynom.Plate) (err error) {
+func ExpectNotOneOf(set ...byte) Nom {
+	return func(p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(); err != nil {
 			return
