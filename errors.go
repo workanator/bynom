@@ -20,3 +20,12 @@ func (e ErrExpectationFailed) Error() string {
 	}
 	return fmt.Sprintf("expectation failed: expected '%s', have '%s'", string(e.Expected), string(e.Have))
 }
+
+// ErrStateTestFailed notifies that state test against value Assert failed.
+type ErrStateTestFailed struct {
+	Assert State
+}
+
+func (e ErrStateTestFailed) Error() string {
+	return fmt.Sprintf("state test failed: %b", e.Assert)
+}
