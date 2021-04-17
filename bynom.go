@@ -26,7 +26,7 @@ type Plate interface {
 	SeekPosition(pos int) (err error)
 }
 
-// Eater encapsulates logic of how to parse bytes from plate.
+// Eater implements logic of how to parse bytes from plate.
 type Eater interface {
 	// Eat parses the next portion of bytes from the Plate p.
 	Eat(p Plate) (err error)
