@@ -4,16 +4,16 @@ import "fmt"
 
 // ErrExpectationFailed describes what have been expected and what encountered.
 type ErrExpectationFailed struct {
-	Expected []byte // Which byte(s) have been expected.
-	Have     byte   // Which byte encountered.
-	Not      bool   // Not negates the meaning of Expected.
+	Expected Range // Which range has been expected.
+	Have     byte  // Which byte encountered.
+	Not      bool  // Not negates the meaning of Expected.
 }
 
 func (e ErrExpectationFailed) Error() string {
 	if e.Not {
-		return fmt.Sprintf("expectation failed: expected not '%s'", string(e.Expected))
+		return fmt.Sprintf("expectation failed: expected not %v", e.Expected)
 	}
-	return fmt.Sprintf("expectation failed: expected '%s', have '%s'", string(e.Expected), string(e.Have))
+	return fmt.Sprintf("expectation failed: expected %v, have '%s'", e.Expected, string(e.Have))
 }
 
 // ErrStateTestFailed notifies that state test against value Assert failed.

@@ -8,6 +8,7 @@ import (
 	. "github.com/workanator/bynom"
 	"github.com/workanator/bynom/dish"
 	"github.com/workanator/bynom/into"
+	"github.com/workanator/bynom/span"
 	"github.com/workanator/bynom/state"
 )
 
@@ -24,7 +25,7 @@ var (
 )
 
 var (
-	digits     = WhileOneOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+	digits     = WhileInRange(span.NewRange('0', '9'))
 	twoDigits  = RequireLen(2, digits)
 	fourDigits = RequireLen(4, digits)
 )
@@ -75,8 +76,8 @@ var (
 		),
 		Take(
 			into.Bytes(&amPm),
-			ExpectOneOf('a', 'A', 'p', 'P'),
-			ExpectOneOf('m', 'M'),
+			ExpectInRange(span.NewSet('a', 'A', 'p', 'P')),
+			ExpectInRange(span.NewSet('m', 'M')),
 			ChangeState(partAMPM, parts.Set),
 		),
 	)

@@ -10,6 +10,7 @@ import (
 	. "github.com/workanator/bynom"
 	"github.com/workanator/bynom/dish"
 	"github.com/workanator/bynom/into"
+	"github.com/workanator/bynom/span"
 	"github.com/workanator/bynom/state"
 )
 
@@ -26,11 +27,12 @@ func TestRule_Eat(t *testing.T) {
 		p           = dish.NewBytes([]byte(pattern))
 		name, value []byte
 		brackets    = state.NewBits()
+		whitespace  = span.NewSet(' ', '\t')
 	)
 
 	var r = bynom.NewRule(
 		ChangeState(0, brackets.Replace),
-		Optional(WhileOneOf(' ', '\t')),
+		Optional(WhileInRange(whitespace)),
 		Switch(
 			When(
 				Expect('['),
@@ -51,9 +53,9 @@ func TestRule_Eat(t *testing.T) {
 				ChangeState(curlyBrackets, brackets.Replace),
 			),
 		),
-		Optional(WhileOneOf(' ', '\t')),
+		Optional(WhileInRange(whitespace)),
 		Expect('='),
-		Optional(WhileOneOf(' ', '\t')),
+		Optional(WhileInRange(whitespace)),
 		Take(
 			into.Bytes(&value),
 			Any(),

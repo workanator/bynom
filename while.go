@@ -2,6 +2,8 @@ package bynom
 
 import (
 	"io"
+
+	"github.com/workanator/bynom/span"
 )
 
 // While reads bytes from the plate while they equal r.
@@ -34,7 +36,7 @@ func While(r byte) Nom {
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: []byte{r},
+				Expected: span.NewByte(r),
 				Have:     b,
 			}
 		}
@@ -43,10 +45,10 @@ func While(r byte) Nom {
 	}
 }
 
-// WhileOneOf reads bytes from the plate while they belong to the set set.
+// WhileInRange reads bytes from the plate while they belong to the range r.
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
-func WhileOneOf(set ...byte) Nom {
+func WhileInRange(r Range) Nom {
 	return func(p Plate) (err error) {
 		var (
 			count int
@@ -62,15 +64,7 @@ func WhileOneOf(set ...byte) Nom {
 				}
 				return
 			}
-
-			var belong bool
-			for _, r := range set {
-				if b == r {
-					belong = true
-					break
-				}
-			}
-			if !belong {
+			if r.Excludes(b) {
 				break
 			}
 
@@ -81,7 +75,7 @@ func WhileOneOf(set ...byte) Nom {
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: set,
+				Expected: r,
 				Have:     b,
 			}
 		}
@@ -120,7 +114,7 @@ func WhileNot(r byte) Nom {
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: []byte{r},
+				Expected: span.NewByte(r),
 				Have:     b,
 				Not:      true,
 			}
@@ -130,16 +124,15 @@ func WhileNot(r byte) Nom {
 	}
 }
 
-// WhileNotOneOf reads bytes from the plate while they do not belong to the set set.
+// WhileNotInRange reads bytes from the plate while they do not belong to the range r.
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
-func WhileNotOneOf(set ...byte) Nom {
+func WhileNotInRange(r Range) Nom {
 	return func(p Plate) (err error) {
 		var (
 			count int
 			b     byte
 		)
-	Loop:
 		for {
 			if b, err = p.PeekByte(); err != nil {
 				if err == io.EOF {
@@ -150,11 +143,8 @@ func WhileNotOneOf(set ...byte) Nom {
 				}
 				return
 			}
-
-			for _, r := range set {
-				if b == r {
-					break Loop
-				}
+			if r.Includes(b) {
+				break
 			}
 
 			if _, err = p.NextByte(); err != nil {
@@ -164,7 +154,7 @@ func WhileNotOneOf(set ...byte) Nom {
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: set,
+				Expected: r,
 				Have:     b,
 				Not:      true,
 			}

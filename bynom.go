@@ -32,5 +32,14 @@ type Eater interface {
 	Eat(p Plate) (err error)
 }
 
+// Range allows to test if byte belongs to some set.
+type Range interface {
+	// Includes tests if the byte b is in the range.
+	Includes(b byte) bool
+
+	// Excludes tests if the byte b is not in the range.
+	Excludes(b byte) bool
+}
+
 // Nom implements logic of how to read byte(s) from the plate.
 type Nom func(Plate) error

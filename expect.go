@@ -1,5 +1,7 @@
 package bynom
 
+import "github.com/workanator/bynom/span"
+
 // Expect reads the next byte from the plate and tests it against r.
 // If the byte read does not equal r the function will return ErrExpectationFailed.
 func Expect(r byte) Nom {
@@ -8,35 +10,31 @@ func Expect(r byte) Nom {
 		if b, err = p.NextByte(); err != nil {
 			return
 		}
-
-		if b != r {
-			return ErrExpectationFailed{
-				Expected: []byte{r},
-				Have:     b,
-			}
+		if b == r {
+			return nil
 		}
 
-		return nil
+		return ErrExpectationFailed{
+			Expected: span.NewByte(r),
+			Have:     b,
+		}
 	}
 }
 
-// ExpectOneOf reads the next byte from the plate and tests it against the set set.
-// If the byte read does not belong to the set the function will return ErrExpectationFailed.
-func ExpectOneOf(set ...byte) Nom {
+// ExpectInRange reads the next byte from the plate and tests it included in the range r.
+// If the byte read does not belong to the range the function will return ErrExpectationFailed.
+func ExpectInRange(r Range) Nom {
 	return func(p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(); err != nil {
 			return
 		}
-
-		for _, r := range set {
-			if b == r {
-				return nil
-			}
+		if r.Includes(b) {
+			return nil
 		}
 
 		return ErrExpectationFailed{
-			Expected: set,
+			Expected: r,
 			Have:     b,
 		}
 	}
@@ -50,36 +48,32 @@ func ExpectNot(r byte) Nom {
 		if b, err = p.NextByte(); err != nil {
 			return
 		}
-
 		if b != r {
 			return nil
 		}
 
 		return ErrExpectationFailed{
-			Expected: []byte{r},
+			Expected: span.NewByte(r),
 			Not:      true,
 		}
 	}
 }
 
-// ExpectNotOneOf reads the next byte from the plate and tests it against the set set.
-// If the byte read belongs to the set the function will return ErrExpectationFailed.
-func ExpectNotOneOf(set ...byte) Nom {
+// ExpectNotInRange reads the next byte from the plate and tests whether it is no included in the range r.
+// If the byte read belongs to the range the function will return ErrExpectationFailed.
+func ExpectNotInRange(r Range) Nom {
 	return func(p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(); err != nil {
 			return
 		}
-
-		for _, r := range set {
-			if b == r {
-				return ErrExpectationFailed{
-					Expected: set,
-					Not:      true,
-				}
-			}
+		if r.Excludes(b) {
+			return nil
 		}
 
-		return nil
+		return ErrExpectationFailed{
+			Expected: r,
+			Not:      true,
+		}
 	}
 }
