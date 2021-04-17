@@ -14,9 +14,9 @@ func ChangeState(v int, fns ...func(int) error) Nom {
 	}
 }
 
-// RequireState runs state tests fns for against the value v.
+// TestState runs state tests fns for against the value v.
 // The function does no affect the plate read position.
-func RequireState(v int, fns ...func(int) bool) Nom {
+func TestState(v int, fns ...func(int) bool) Nom {
 	return func(Plate) error {
 		for _, test := range fns {
 			if !test(v) {
