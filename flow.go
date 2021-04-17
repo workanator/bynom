@@ -69,3 +69,29 @@ func Optional(noms ...Nom) Nom {
 		return
 	}
 }
+
+// Repeat runs all parsers noms n times.
+// If at least one of parsers return non-nil error the function
+// will revert back the read position in the plate and return that error.
+func Repeat(n int, noms ...Nom) Nom {
+	return func(p Plate) (err error) {
+		var startPos int
+		if startPos, err = p.TellPosition(); err != nil {
+			return
+		}
+
+	TimeLoop:
+		for i := 0; i < n; i++ {
+			for _, nom := range noms {
+				if err = nom(p); err != nil {
+					break TimeLoop
+				}
+			}
+		}
+		if err != nil {
+			_ = p.SeekPosition(startPos)
+		}
+
+		return
+	}
+}
