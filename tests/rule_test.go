@@ -31,7 +31,7 @@ func TestRule_Eat(t *testing.T) {
 		whitespace  = span.NewSet(' ', '\t')
 	)
 
-	var r = bynom.NewRule(
+	var r = bynom.NewBite(
 		ChangeState(0, brackets.Replace),
 		Optional(WhileInRange(whitespace)),
 		Switch(

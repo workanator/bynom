@@ -90,7 +90,7 @@ var (
 )
 
 var (
-	dateTime = NewRule(Repeat(2, Switch(dateVariants, timeVariants), Optional(While(' '))))
+	dateTime = NewBite(Repeat(2, Switch(dateVariants, timeVariants), Optional(While(' '))))
 )
 
 func main() {
