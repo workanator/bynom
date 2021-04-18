@@ -53,7 +53,7 @@ var (
 		Take(into.Bytes(&year), Switch(fourDigits, twoDigits)),
 	)
 	dateVariants = When(
-		TestState(partDate, parts.NothingSet),
+		RequireState(partDate, parts.NothingSet),
 		Switch(isoDate, deDate, usDate),
 		ChangeState(partDate, parts.Set),
 	)
@@ -82,7 +82,7 @@ var (
 		),
 	)
 	timeVariants = When(
-		TestState(partTime, parts.NothingSet),
+		RequireState(partTime, parts.NothingSet),
 		Switch(time12, time24),
 		ChangeState(partTime, parts.Set),
 	)

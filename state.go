@@ -14,9 +14,9 @@ func ChangeState(v int, fns ...func(int) error) Nom {
 	}
 }
 
-// TestState runs state tests fns for against the value v.
+// RequireState runs state tests fns for against the value v. If at least one test fails the function will fail.
 // The function does no affect the plate read position.
-func TestState(v int, fns ...func(int) bool) Nom {
+func RequireState(v int, fns ...func(int) bool) Nom {
 	return func(Plate) error {
 		for _, test := range fns {
 			if !test(v) {
