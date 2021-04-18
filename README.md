@@ -58,7 +58,7 @@ var (
 )
 ```
 
-See [examples](tree/main/examples) for more examples.
+See [examples](examples) for more examples.
 
 ## To-Do
 
