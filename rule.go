@@ -1,5 +1,7 @@
 package bynom
 
+import "context"
+
 // Rule composes multiple parsing functions into complex parsing logic.
 // Rule implements Eater interface.
 type Rule struct {
@@ -14,15 +16,15 @@ func NewRule(noms ...Nom) *Rule {
 }
 
 // Eat parses the next piece on the Plate p.
-func (rule *Rule) Eat(p Plate) (err error) {
+func (rule *Rule) Eat(ctx context.Context, p Plate) (err error) {
 	var startPos int
-	if startPos, err = p.TellPosition(); err != nil {
+	if startPos, err = p.TellPosition(ctx); err != nil {
 		return
 	}
 
 	for _, nom := range rule.noms {
-		if err = nom(p); err != nil {
-			_ = p.SeekPosition(startPos)
+		if err = nom(ctx, p); err != nil {
+			_ = p.SeekPosition(ctx, startPos)
 			break
 		}
 	}

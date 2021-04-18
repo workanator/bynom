@@ -1,6 +1,7 @@
 package bynom
 
 import (
+	"context"
 	"io"
 
 	"github.com/workanator/bynom/span"
@@ -10,13 +11,13 @@ import (
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func While(r byte) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
 			b     byte
 		)
 		for {
-			if b, err = p.PeekByte(); err != nil {
+			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 {
 						return io.ErrUnexpectedEOF
@@ -29,14 +30,14 @@ func While(r byte) Nom {
 				break
 			}
 
-			if _, err = p.NextByte(); err != nil {
+			if _, err = p.NextByte(ctx); err != nil {
 				return
 			}
 			count++
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: span.NewByte(r),
+				Expected: span.NewSingle(r),
 				Have:     b,
 			}
 		}
@@ -49,13 +50,13 @@ func While(r byte) Nom {
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileInRange(r Range) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
 			b     byte
 		)
 		for {
-			if b, err = p.PeekByte(); err != nil {
+			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 {
 						return io.ErrUnexpectedEOF
@@ -68,7 +69,7 @@ func WhileInRange(r Range) Nom {
 				break
 			}
 
-			if _, err = p.NextByte(); err != nil {
+			if _, err = p.NextByte(ctx); err != nil {
 				return
 			}
 			count++
@@ -88,13 +89,13 @@ func WhileInRange(r Range) Nom {
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileNot(r byte) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
 			b     byte
 		)
 		for {
-			if b, err = p.PeekByte(); err != nil {
+			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 {
 						return io.ErrUnexpectedEOF
@@ -107,14 +108,14 @@ func WhileNot(r byte) Nom {
 				break
 			}
 
-			if _, err = p.NextByte(); err != nil {
+			if _, err = p.NextByte(ctx); err != nil {
 				return
 			}
 			count++
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: span.NewByte(r),
+				Expected: span.NewSingle(r),
 				Have:     b,
 				Not:      true,
 			}
@@ -128,13 +129,13 @@ func WhileNot(r byte) Nom {
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileNotInRange(r Range) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
 			b     byte
 		)
 		for {
-			if b, err = p.PeekByte(); err != nil {
+			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 {
 						return io.ErrUnexpectedEOF
@@ -147,7 +148,7 @@ func WhileNotInRange(r Range) Nom {
 				break
 			}
 
-			if _, err = p.NextByte(); err != nil {
+			if _, err = p.NextByte(ctx); err != nil {
 				return
 			}
 			count++

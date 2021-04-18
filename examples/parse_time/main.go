@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -105,7 +106,7 @@ func main() {
 		input = dish.NewString(arg)
 		err   error
 	)
-	if err = dateTime.Eat(input); err != nil {
+	if err = dateTime.Eat(context.Background(), input); err != nil {
 		panic(err)
 	}
 

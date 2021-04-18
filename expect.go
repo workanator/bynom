@@ -1,13 +1,17 @@
 package bynom
 
-import "github.com/workanator/bynom/span"
+import (
+	"context"
+
+	"github.com/workanator/bynom/span"
+)
 
 // Expect reads the next byte from the plate and tests it against r.
 // If the byte read does not equal r the function will return ErrExpectationFailed.
 func Expect(r byte) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
-		if b, err = p.NextByte(); err != nil {
+		if b, err = p.NextByte(ctx); err != nil {
 			return
 		}
 		if b == r {
@@ -15,7 +19,7 @@ func Expect(r byte) Nom {
 		}
 
 		return ErrExpectationFailed{
-			Expected: span.NewByte(r),
+			Expected: span.NewSingle(r),
 			Have:     b,
 		}
 	}
@@ -24,9 +28,9 @@ func Expect(r byte) Nom {
 // ExpectInRange reads the next byte from the plate and tests it included in the range r.
 // If the byte read does not belong to the range the function will return ErrExpectationFailed.
 func ExpectInRange(r Range) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
-		if b, err = p.NextByte(); err != nil {
+		if b, err = p.NextByte(ctx); err != nil {
 			return
 		}
 		if r.Includes(b) {
@@ -43,9 +47,9 @@ func ExpectInRange(r Range) Nom {
 // ExpectNot reads the next byte from the plate and tests it against r.
 // If the byte read equals r the function will return ErrExpectationFailed.
 func ExpectNot(r byte) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
-		if b, err = p.NextByte(); err != nil {
+		if b, err = p.NextByte(ctx); err != nil {
 			return
 		}
 		if b != r {
@@ -53,7 +57,7 @@ func ExpectNot(r byte) Nom {
 		}
 
 		return ErrExpectationFailed{
-			Expected: span.NewByte(r),
+			Expected: span.NewSingle(r),
 			Not:      true,
 		}
 	}
@@ -62,9 +66,9 @@ func ExpectNot(r byte) Nom {
 // ExpectNotInRange reads the next byte from the plate and tests whether it is no included in the range r.
 // If the byte read belongs to the range the function will return ErrExpectationFailed.
 func ExpectNotInRange(r Range) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
-		if b, err = p.NextByte(); err != nil {
+		if b, err = p.NextByte(ctx); err != nil {
 			return
 		}
 		if r.Excludes(b) {

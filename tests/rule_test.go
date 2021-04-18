@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"context"
 	"os"
 	"strconv"
 	"testing"
@@ -63,7 +64,7 @@ func TestRule_Eat(t *testing.T) {
 	)
 
 	var err error
-	if err = r.Eat(p); err != nil {
+	if err = r.Eat(context.Background(), p); err != nil {
 		t.Fatalf("Failed to eat: %v\n", err)
 	}
 

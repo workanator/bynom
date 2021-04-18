@@ -1,6 +1,7 @@
 package dish
 
 import (
+	"context"
 	"errors"
 	"io"
 )
@@ -20,7 +21,7 @@ func NewBytes(buf []byte) *Bytes {
 }
 
 // NextByte reads the next byte from the slice.
-func (bd *Bytes) NextByte() (b byte, err error) {
+func (bd *Bytes) NextByte(context.Context) (b byte, err error) {
 	if bd.pos >= len(bd.buf) {
 		return 0, io.EOF
 	}
@@ -31,7 +32,7 @@ func (bd *Bytes) NextByte() (b byte, err error) {
 }
 
 // PeekByte returns the current byte in the slice.
-func (bd *Bytes) PeekByte() (b byte, err error) {
+func (bd *Bytes) PeekByte(context.Context) (b byte, err error) {
 	if bd.pos >= len(bd.buf) {
 		return 0, io.EOF
 	}
@@ -40,7 +41,7 @@ func (bd *Bytes) PeekByte() (b byte, err error) {
 }
 
 // ByteSlice returns the slice of the underlying slice.
-func (bd *Bytes) ByteSlice(start int, end int) (p []byte, err error) {
+func (bd *Bytes) ByteSlice(_ context.Context, start int, end int) (p []byte, err error) {
 	if end < start {
 		return nil, errStartLessEnd
 	}
@@ -55,12 +56,12 @@ func (bd *Bytes) ByteSlice(start int, end int) (p []byte, err error) {
 }
 
 // TellPosition returns the current read position.
-func (bd *Bytes) TellPosition() (pos int, err error) {
+func (bd *Bytes) TellPosition(context.Context) (pos int, err error) {
 	return bd.pos, nil
 }
 
 // SeekPosition sets the new read position.
-func (bd *Bytes) SeekPosition(pos int) (err error) {
+func (bd *Bytes) SeekPosition(_ context.Context, pos int) (err error) {
 	if pos >= 0 && pos < len(bd.buf) {
 		bd.pos = pos
 		return nil

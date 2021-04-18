@@ -1,6 +1,7 @@
 package bynom
 
 import (
+	"context"
 	"fmt"
 	"io"
 )
@@ -8,9 +9,9 @@ import (
 // Debug prints debug message msg and the current read position in the writer w.
 // The function does no affect the plate read position.
 func Debug(w io.Writer, msg string) Nom {
-	return func(p Plate) (err error) {
+	return func(ctx context.Context, p Plate) (err error) {
 		var pos int
-		if pos, err = p.TellPosition(); err != nil {
+		if pos, err = p.TellPosition(ctx); err != nil {
 			return
 		}
 
