@@ -21,41 +21,44 @@ To install the package use `go get github.com/workanator/bynom`
 
 * **byte-oriented**: The basic type is _byte_ and parsers works with bytes and byte slices.
 * **zero-copy**: If a parser returns a subset of its input data, it will return a slice of that input, without copying.<sup>1</sup>
+* **conditional parsing**: Parsing can be conditional containing switches and optional parts.
 
 <sup>1</sup> Depends on the implementation of `bynom.Plate`.
 
 ## Example
 
-Here is the example of how time parser can be constructed. The expecyed format is `HH:MM[:SS][ ][AM|PM]`.
+Here is the simplified example of how time parser can be constructed. The expected time format is `HH:MM[:SS][ ][AM|PM]`.
 
 ```go
-var (
-  hour, minute, second, amPm []byte                // Parsing result will be here
+var hour, minute, second, amPm []byte            // Parsing result will be here
+
+digits := WhileInRange(span.Range('0', '9'))     // Allow only bytes in the range '0'..'9'
+twoDigits := RequireLen(2, digits)               // Require the sequence to be 2 bytes in length
+time24 := Group(
+  Take(into.Bytes(&hour), twoDigits),            // Parse hour and write the result in `hour`
+  Expect(':'),                                   // Expect ':' after the hour
+  Take(into.Bytes(&minute), twoDigits),          // Parse minute and write the result in `minute`
+  Optional(                                      // Parse optional second
+    Expect(':'),                                 // Expect ':' after the the minute
+    Take(into.Bytes(&second), twoDigits),        // Parse second and write the result in `second`
+  ),
+)
+time12 := Group(
+  time24,                                        // Extend 24-hour time parser
+  Optional(While(' ')),                          // Skip optional whitespace
+  Take(                                          // Parse AM/PM part
+    into.Bytes(&amPm),                           // On success write the result in `amPm`
+    ExpectInRange(span.Set('a', 'A', 'p', 'P')), // Expect one byte from the set aApP
+    ExpectInRange(span.Set('m', 'M')),           // Expect one byte from the set mM
+  ),
 )
 
-var (
-  digits     = WhileInRange(span.Range('0', '9'))  // Allow only bytes in the range '0'..'9'
-  twoDigits  = RequireLen(2, digits)               // Require the sequence to be 2 bytes in length
-  time24 = Group(
-    Take(into.Bytes(&hour), twoDigits),            // Parse hour and write the result in `hour`
-    Expect(':'),                                   // Expect ':' after the hour
-    Take(into.Bytes(&minute), twoDigits),          // Parse minute and write the result in `minute`
-    Optional(                                      // Parse optional second
-      Expect(':'),                                 // Expect ':' after the the minute
-      Take(into.Bytes(&second), twoDigits),        // Parse second and write the result in `second`
-    ),
-  )
-  time12 = Group(
-    time24,                                        // Extend 24-hour time parser
-    Optional(While(' ')),                          // Skip optional whitespace
-    Take(                                          // Parse AM/PM part
-      into.Bytes(&amPm),                           // On success write the result in `amPm`
-      ExpectInRange(span.Set('a', 'A', 'p', 'P')), // Expect one byte from the set aApP
-      ExpectInRange(span.Set('m', 'M')),           // Expect one byte from the set mM
-    ),
-  )
-  timeBite = NewBite(Switch(time12, time24))       // Wrap parsers into the bynom.Eater.
-)
+timeBite := NewBite(Switch(time12, time24))      // Wrap parsers into the bynom.Eater.
+if err := dish.NewString(inputData); err != nil {
+	panic(err)
+} else {
+	println(string(hour), ":", string(minute), ":", string(second), " ", string(amPn))
+}
 ```
 
 See [examples](examples) for more examples.
@@ -63,6 +66,7 @@ See [examples](examples) for more examples.
 ## To-Do
 
 * [ ] Add support for "words".
+* [ ] Add Plate implementation from io.ReadSeeker.
 * [ ] Add more tests.
 * [ ] Add benchmarks.
 * [ ] Add more examples.
@@ -70,4 +74,4 @@ See [examples](examples) for more examples.
 
 ## Contribution
 
-Any contribution is welcome.
+Any contributions are welcome.

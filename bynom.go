@@ -28,9 +28,17 @@ type Plate interface {
 	SeekPosition(context.Context, int) error
 }
 
-// Eater implements logic of how to parse bytes from plate.
+// Feeder feeds bytes from plate to parser.
+// Plate implementation can support transactional parsing by implementing Feeder.
+type Feeder interface {
+	// Feed feeds the parser the next portion of bytes.
+	Feed(context.Context, Nom) error
+}
+
+// Eater parses bytes on plate according to inner logic.
 type Eater interface {
-	// Eat parses the next portion of bytes from the Plate p.
+	// Eat parses the next portion of bytes from the Plate.
+	// Successful call to Eat moves the read position of the Plate.
 	Eat(context.Context, Plate) error
 }
 
