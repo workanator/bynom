@@ -26,7 +26,7 @@ var (
 )
 
 var (
-	digits     = WhileInRange(span.NewRange('0', '9'))
+	digits     = WhileInRange(span.Range('0', '9'))
 	twoDigits  = RequireLen(2, digits)
 	fourDigits = RequireLen(4, digits)
 )
@@ -77,8 +77,8 @@ var (
 		),
 		Take(
 			into.Bytes(&amPm),
-			ExpectInRange(span.NewSet('a', 'A', 'p', 'P')),
-			ExpectInRange(span.NewSet('m', 'M')),
+			ExpectInRange(span.Set('a', 'A', 'p', 'P')),
+			ExpectInRange(span.Set('m', 'M')),
 			ChangeState(partAMPM, parts.Set),
 		),
 	)

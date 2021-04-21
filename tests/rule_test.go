@@ -17,7 +17,7 @@ import (
 
 func TestRule_Eat(t *testing.T) {
 	const (
-		squareBrackets int = iota + 1
+		squareBrackets = iota + 1
 		curlyBrackets
 	)
 
@@ -28,7 +28,7 @@ func TestRule_Eat(t *testing.T) {
 		p           = dish.NewBytes([]byte(pattern))
 		name, value []byte
 		brackets    = state.NewBits()
-		whitespace  = span.NewSet(' ', '\t')
+		whitespace  = span.Set(' ', '\t')
 	)
 
 	var r = bynom.NewBite(

@@ -3,8 +3,6 @@ package bynom
 import (
 	"context"
 	"io"
-
-	"github.com/workanator/bynom/span"
 )
 
 // While reads bytes from the plate while they equal r.
@@ -37,7 +35,7 @@ func While(r byte) Nom {
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: span.NewSingle(r),
+				Expected: r,
 				Have:     b,
 			}
 		}
@@ -115,7 +113,7 @@ func WhileNot(r byte) Nom {
 		}
 		if count == 0 {
 			return ErrExpectationFailed{
-				Expected: span.NewSingle(r),
+				Expected: r,
 				Have:     b,
 				Not:      true,
 			}

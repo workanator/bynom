@@ -2,8 +2,6 @@ package bynom
 
 import (
 	"context"
-
-	"github.com/workanator/bynom/span"
 )
 
 // Expect reads the next byte from the plate and tests it against r.
@@ -19,7 +17,7 @@ func Expect(r byte) Nom {
 		}
 
 		return ErrExpectationFailed{
-			Expected: span.NewSingle(r),
+			Expected: r,
 			Have:     b,
 		}
 	}
@@ -57,7 +55,7 @@ func ExpectNot(r byte) Nom {
 		}
 
 		return ErrExpectationFailed{
-			Expected: span.NewSingle(r),
+			Expected: r,
 			Not:      true,
 		}
 	}
