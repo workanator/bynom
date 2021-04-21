@@ -6,7 +6,7 @@
 ByNom is a Go package for parsing byte sequences.
 Its goal is to provide tools to build safe byte parsers without compromising the speed or memory consumption.
 
-The project is inspired by Rust [nom](https://github.com/Geal/nom) library. At the time I was looking
+The package is inspired by Rust [nom](https://github.com/Geal/nom) library. At the time I was looking
 for the byte parser library which could meet my requirements, and therefore I decided to write that package.
 
 ## Status
@@ -37,7 +37,7 @@ var (
   digits     = WhileInRange(span.Range('0', '9'))  // Allow only bytes in the range '0'..'9'
   twoDigits  = RequireLen(2, digits)               // Require the sequence to be 2 bytes in length
   time24 = Group(
-  Take(into.Bytes(&hour), twoDigits),              // Parse hour and write the result in `hour`
+    Take(into.Bytes(&hour), twoDigits),            // Parse hour and write the result in `hour`
     Expect(':'),                                   // Expect ':' after the hour
     Take(into.Bytes(&minute), twoDigits),          // Parse minute and write the result in `minute`
     Optional(                                      // Parse optional second
@@ -58,7 +58,7 @@ var (
 )
 ```
 
-See [examples](tree/main/examples) for more examples.
+See [examples](examples) for more examples.
 
 ## To-Do
 
