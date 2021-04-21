@@ -6,7 +6,7 @@
 ByNom is a Go package for parsing byte sequences.
 Its goal is to provide tools to build safe byte parsers without compromising the speed or memory consumption.
 
-The project is inspired by Rust [nom](https://github.com/Geal/nom) library. At the time I was looking
+The package is inspired by Rust [nom](https://github.com/Geal/nom) library. At the time I was looking
 for the byte parser library which could meet my requirements, and therefore I decided to write that package.
 
 ## Status
@@ -22,7 +22,7 @@ To install the package use `go get github.com/workanator/bynom`
 * **byte-oriented**: The basic type is _byte_ and parsers works with bytes and byte slices.
 * **zero-copy**: If a parser returns a subset of its input data, it will return a slice of that input, without copying.<sup>1</sup>
 
-1. Depends on the implementation of `bynom.Plate`.
+1. Depends on the exact implementation of `bynom.Plate`.
 
 ## Example
 
