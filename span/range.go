@@ -1,29 +1,30 @@
 package span
 
-// Range implements bynom.Range which includes all bytes from a to b including a and b.
-type Range struct {
+import "github.com/workanator/bynom"
+
+type byteRange struct {
 	a, b byte
 }
 
-// NewRange creates a new Range instance.
-func NewRange(from, to byte) Range {
-	return Range{
+// Range creates a range which includes all bytes from a to b including a and b.
+func Range(from, to byte) bynom.Range {
+	return byteRange{
 		a: from,
 		b: to,
 	}
 }
 
-// Includes tests if the byte v is in the rnage.
-func (r Range) Includes(v byte) bool {
+// Includes tests if the byte v is in the range.
+func (r byteRange) Includes(v byte) bool {
 	return v >= r.a && v <= r.b
 }
 
 // Excludes tests if the byte v is not in the range.
-func (r Range) Excludes(v byte) bool {
+func (r byteRange) Excludes(v byte) bool {
 	return v < r.a || v > r.b
 }
 
 // Implement fmt.Stringer interface.
-func (r Range) String() string {
+func (r byteRange) String() string {
 	return "[" + string(r.a) + "-" + string(r.b) + "]"
 }
