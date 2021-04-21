@@ -55,9 +55,9 @@ time12 := Group(
 
 timeBite := NewBite(Switch(time12, time24))      // Wrap parsers into the bynom.Eater.
 if err := dish.NewString(inputData); err != nil {
-	panic(err)
+  panic(err)
 } else {
-	println(string(hour), ":", string(minute), ":", string(second), " ", string(amPn))
+  println(string(hour), ":", string(minute), ":", string(second), " ", string(amPn))
 }
 ```
 
