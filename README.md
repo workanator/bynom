@@ -37,7 +37,7 @@ var (
   digits     = WhileInRange(span.NewRange('0', '9'))  // Allow only bytes in the range '0'..'9'
   twoDigits  = RequireLen(2, digits)                  // Require the sequence to be 2 bytes in length
   time24 = Group(
-  Take(into.Bytes(&hour), twoDigits),                 // Parse hour and write the result in `hour`
+    Take(into.Bytes(&hour), twoDigits),                 // Parse hour and write the result in `hour`
     Expect(':'),                                      // Expect ':' after the hour
     Take(into.Bytes(&minute), twoDigits),             // Parse minute and write the result in `minute`
     Optional(                                         // Parse optional second
