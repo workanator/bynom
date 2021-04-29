@@ -43,5 +43,5 @@ func (s ByteSet) String() string {
 		return keys[i] < keys[j]
 	})
 
-	return "[" + string(keys) + "]"
+	return "{" + string(keys) + "}"
 }

@@ -103,7 +103,7 @@ func WhileAcceptable(r Relevance) Nom {
 				}
 				return
 			}
-			if r.IsAcceptable(count, b) {
+			if !r.IsAcceptable(count, b) {
 				break
 			}
 
@@ -142,7 +142,7 @@ func WhileIneligible(r Relevance) Nom {
 				}
 				return
 			}
-			if r.IsIneligible(count, b) {
+			if !r.IsIneligible(count, b) {
 				break
 			}
 
