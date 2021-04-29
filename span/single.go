@@ -1,25 +1,24 @@
 package span
 
-import "github.com/workanator/bynom"
-
-type singleByte byte
+// SingleByte accepts only one byte equal to instance.
+type SingleByte byte
 
 // Single creates a range containing only one byte.
-func Single(b byte) bynom.Relevance {
-	return singleByte(b)
+func Single(b byte) SingleByte {
+	return SingleByte(b)
 }
 
 // IsAcceptable tests if the byte v equals the instance.
-func (b singleByte) IsAcceptable(_ int, v byte) (ok bool) {
+func (b SingleByte) IsAcceptable(_ int, v byte) bool {
 	return byte(b) == v
 }
 
 // IsIneligible tests if the the byte v does not equal the instance.
-func (b singleByte) IsIneligible(_ int, v byte) (ok bool) {
+func (b SingleByte) IsIneligible(_ int, v byte) bool {
 	return byte(b) != v
 }
 
 // Implement fmt.Stringer interface.
-func (b singleByte) String() string {
+func (b SingleByte) String() string {
 	return "[" + string(b) + "]"
 }

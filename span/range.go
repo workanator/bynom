@@ -1,30 +1,30 @@
 package span
 
-import "github.com/workanator/bynom"
-
-type byteRange struct {
-	a, b byte
+// ByteRange accepts all bytes between bounds, including bounds.
+type ByteRange struct {
+	from byte // Start of the range, inclusive
+	to   byte // End of the range, inclusive
 }
 
 // Range creates a range which includes all bytes from a to b including a and b.
-func Range(from, to byte) bynom.Relevance {
-	return byteRange{
-		a: from,
-		b: to,
+func Range(from, to byte) ByteRange {
+	return ByteRange{
+		from: from,
+		to:   to,
 	}
 }
 
 // IsAcceptable tests if the byte v is in the range.
-func (r byteRange) IsAcceptable(_ int, v byte) bool {
-	return v >= r.a && v <= r.b
+func (r ByteRange) IsAcceptable(_ int, v byte) bool {
+	return v >= r.from && v <= r.to
 }
 
 // IsIneligible tests if the the byte v is not in the range.
-func (r byteRange) IsIneligible(_ int, v byte) bool {
-	return v < r.a || v > r.b
+func (r ByteRange) IsIneligible(_ int, v byte) bool {
+	return v < r.from || v > r.to
 }
 
 // Implement fmt.Stringer interface.
-func (r byteRange) String() string {
-	return "[" + string(r.a) + "-" + string(r.b) + "]"
+func (r ByteRange) String() string {
+	return "[" + string(r.from) + "-" + string(r.to) + "]"
 }

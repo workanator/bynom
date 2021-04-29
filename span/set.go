@@ -2,40 +2,39 @@ package span
 
 import (
 	"sort"
-
-	"github.com/workanator/bynom"
 )
 
-type byteSet struct {
+// ByteSet accepts all bytes from set.
+type ByteSet struct {
 	m map[byte]struct{}
 }
 
 // Set creates a range which includes all bytes belonging to set.
-func Set(variants ...byte) bynom.Relevance {
+func Set(variants ...byte) ByteSet {
 	var m = make(map[byte]struct{}, len(variants))
 	for _, v := range variants {
 		m[v] = struct{}{}
 	}
 
-	return byteSet{
+	return ByteSet{
 		m: m,
 	}
 }
 
 // IsAcceptable tests if the byte v is in the set.
-func (s byteSet) IsAcceptable(_ int, v byte) (ok bool) {
-	_, ok = s.m[v]
-	return
+func (s ByteSet) IsAcceptable(_ int, v byte) bool {
+	_, ok := s.m[v]
+	return ok
 }
 
 // IsIneligible tests if the the byte v is not in the set.
-func (s byteSet) IsIneligible(_ int, v byte) (ok bool) {
-	_, ok = s.m[v]
+func (s ByteSet) IsIneligible(_ int, v byte) bool {
+	_, ok := s.m[v]
 	return !ok
 }
 
 // Implement fmt.Stringer interface.
-func (s byteSet) String() string {
+func (s ByteSet) String() string {
 	var keys = make([]byte, 0, len(s.m))
 	for k, _ := range s.m {
 		keys = append(keys, k)
