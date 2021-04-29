@@ -42,13 +42,13 @@ type Eater interface {
 	Eat(context.Context, Plate) error
 }
 
-// Range allows to test if byte belongs to some set.
-type Range interface {
-	// Includes tests if the argument is in the range.
-	Includes(byte) bool
+// Relevance allows to test if N-th byte is acceptable of ineligible.
+type Relevance interface {
+	// IsAcceptable tests if the N-th byte is acceptable.
+	IsAcceptable(int, byte) bool
 
-	// Excludes tests if the argument is not in the range.
-	Excludes(byte) bool
+	// IsIneligible tests if the N-th byte is ineligible.
+	IsIneligible(int, byte) bool
 }
 
 // Nom implements logic of how to read byte(s) from the plate.

@@ -31,9 +31,11 @@ func TestRule_Eat(t *testing.T) {
 		whitespace  = span.Set(' ', '\t')
 	)
 
+	t.Logf("Pattern = %s\n", pattern)
+
 	var r = bynom.NewBite(
 		ChangeState(0, brackets.Replace),
-		Optional(WhileInRange(whitespace)),
+		Optional(WhileAcceptable(whitespace)),
 		Switch(
 			When(
 				Expect('['),
@@ -54,9 +56,9 @@ func TestRule_Eat(t *testing.T) {
 				ChangeState(curlyBrackets, brackets.Replace),
 			),
 		),
-		Optional(WhileInRange(whitespace)),
+		Optional(WhileAcceptable(whitespace)),
 		Expect('='),
-		Optional(WhileInRange(whitespace)),
+		Optional(WhileAcceptable(whitespace)),
 		Take(
 			into.Bytes(&value),
 			Any(),
@@ -78,7 +80,6 @@ func TestRule_Eat(t *testing.T) {
 		t.Fatalf("Expected value %s, have %s\n", randomValue, string(value))
 	}
 
-	t.Logf("Pattern = %s\n", pattern)
 	t.Logf("Name = %s\n", string(name))
 	t.Logf("Value = %s\n", string(value))
 }

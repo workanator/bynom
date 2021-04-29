@@ -11,7 +11,7 @@ type byteSet struct {
 }
 
 // Set creates a range which includes all bytes belonging to set.
-func Set(variants ...byte) bynom.Range {
+func Set(variants ...byte) bynom.Relevance {
 	var m = make(map[byte]struct{}, len(variants))
 	for _, v := range variants {
 		m[v] = struct{}{}
@@ -22,14 +22,14 @@ func Set(variants ...byte) bynom.Range {
 	}
 }
 
-// Includes tests if the byte v is in the range.
-func (s byteSet) Includes(v byte) (ok bool) {
+// IsAcceptable tests if the byte v is in the set.
+func (s byteSet) IsAcceptable(_ int, v byte) (ok bool) {
 	_, ok = s.m[v]
 	return
 }
 
-// Excludes tests if the byte v is not in the range.
-func (s byteSet) Excludes(v byte) (ok bool) {
+// IsIneligible tests if the the byte v is not in the set.
+func (s byteSet) IsIneligible(_ int, v byte) (ok bool) {
 	_, ok = s.m[v]
 	return !ok
 }

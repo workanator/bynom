@@ -7,20 +7,20 @@ type byteRange struct {
 }
 
 // Range creates a range which includes all bytes from a to b including a and b.
-func Range(from, to byte) bynom.Range {
+func Range(from, to byte) bynom.Relevance {
 	return byteRange{
 		a: from,
 		b: to,
 	}
 }
 
-// Includes tests if the byte v is in the range.
-func (r byteRange) Includes(v byte) bool {
+// IsAcceptable tests if the byte v is in the range.
+func (r byteRange) IsAcceptable(_ int, v byte) bool {
 	return v >= r.a && v <= r.b
 }
 
-// Excludes tests if the byte v is not in the range.
-func (r byteRange) Excludes(v byte) bool {
+// IsIneligible tests if the the byte v is not in the range.
+func (r byteRange) IsIneligible(_ int, v byte) bool {
 	return v < r.a || v > r.b
 }
 

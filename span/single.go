@@ -5,17 +5,17 @@ import "github.com/workanator/bynom"
 type singleByte byte
 
 // Single creates a range containing only one byte.
-func Single(b byte) bynom.Range {
+func Single(b byte) bynom.Relevance {
 	return singleByte(b)
 }
 
-// Includes tests if the byte v equals the instance.
-func (b singleByte) Includes(v byte) bool {
+// IsAcceptable tests if the byte v equals the instance.
+func (b singleByte) IsAcceptable(_ int, v byte) (ok bool) {
 	return byte(b) == v
 }
 
-// Excludes tests if the byte v does not equal the instance.
-func (b singleByte) Excludes(v byte) bool {
+// IsIneligible tests if the the byte v does not equal the instance.
+func (b singleByte) IsIneligible(_ int, v byte) (ok bool) {
 	return byte(b) != v
 }
 
