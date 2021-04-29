@@ -7,10 +7,10 @@ type ByteRange struct {
 }
 
 // Range creates a range which includes all bytes from a to b including a and b.
-func Range(from, to byte) ByteRange {
+func Range(a, b byte) ByteRange {
 	return ByteRange{
-		from: from,
-		to:   to,
+		from: a,
+		to:   b,
 	}
 }
 
