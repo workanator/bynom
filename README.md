@@ -65,7 +65,7 @@ See [examples](examples) for more examples.
 
 ## To-Do
 
-* [ ] Add support for "words".
+* [x] Add support for "words".
 * [ ] Add Plate implementation from io.ReadSeeker.
 * [ ] Add more tests.
 * [ ] Add benchmarks.
@@ -74,4 +74,4 @@ See [examples](examples) for more examples.
 
 ## Contribution
 
-Any contributions are welcome.
+Any contributions and feedback are welcome.
