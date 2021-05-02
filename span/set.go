@@ -24,13 +24,13 @@ func Set(variants ...byte) ByteSet {
 // IsAcceptable tests if the byte v is in the set.
 func (s ByteSet) IsAcceptable(_ int, v byte) (bool, int) {
 	_, ok := s.m[v]
-	return ok, -1
+	return ok, 0
 }
 
 // IsIneligible tests if the the byte v is not in the set.
 func (s ByteSet) IsIneligible(_ int, v byte) (bool, int) {
 	_, ok := s.m[v]
-	return !ok, -1
+	return !ok, 0
 }
 
 // Implement fmt.Stringer interface.

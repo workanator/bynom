@@ -90,7 +90,13 @@ var (
 )
 
 var (
-	dateTime = NewBite(Repeat(2, Switch(dateVariants, timeVariants), Optional(While(' '))))
+	dateTime = NewBite(
+		Switch(dateVariants, timeVariants),
+		Optional(
+			While(' '),
+			Switch(dateVariants, timeVariants),
+		),
+	)
 )
 
 func main() {

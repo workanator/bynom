@@ -16,12 +16,12 @@ func Range(a, b byte) ByteRange {
 
 // IsAcceptable tests if the byte v is in the range.
 func (r ByteRange) IsAcceptable(_ int, v byte) (bool, int) {
-	return v >= r.from && v <= r.to, -1
+	return v >= r.from && v <= r.to, 0
 }
 
 // IsIneligible tests if the the byte v is not in the range.
 func (r ByteRange) IsIneligible(_ int, v byte) (bool, int) {
-	return v < r.from || v > r.to, -1
+	return v < r.from || v > r.to, 0
 }
 
 // Implement fmt.Stringer interface.

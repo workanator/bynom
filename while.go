@@ -101,7 +101,7 @@ func WhileAcceptable(r Relevance) Nom {
 		for {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
-					if count == 0 {
+					if count == 0 && iterations == 0 {
 						return io.ErrUnexpectedEOF
 					}
 					return nil
@@ -116,8 +116,6 @@ func WhileAcceptable(r Relevance) Nom {
 			if good, leftBytes = r.IsAcceptable(count, b); !good {
 				if iterations > 0 {
 					_ = p.SeekPosition(ctx, startPos)
-				} else if leftBytes == -1 && count > 0 {
-					iterations++ // That is the infinite sequence and some bytes were read from it.
 				}
 				break
 			}
@@ -163,7 +161,7 @@ func WhileIneligible(r Relevance) Nom {
 		for {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
-					if count == 0 {
+					if count == 0 && iterations == 0 {
 						return io.ErrUnexpectedEOF
 					}
 					return nil
@@ -178,8 +176,6 @@ func WhileIneligible(r Relevance) Nom {
 			if bad, leftBytes = r.IsIneligible(count, b); !bad {
 				if iterations > 0 {
 					_ = p.SeekPosition(ctx, startPos)
-				} else if leftBytes == -1 && count > 0 {
-					iterations++ // That is the infinite sequence and some bytes were read from it.
 				}
 				break
 			}

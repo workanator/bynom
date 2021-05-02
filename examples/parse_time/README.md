@@ -8,4 +8,6 @@ Try to run the example with the current date
 
 ```shell
 $ go run examples/parse_time/main.go `date --rfc-3339=seconds`
+$ go run examples/parse_time/main.go `date '+%x %r'`
+$ go run examples/parse_time/main.go `date '+%r %x'`
 ```
