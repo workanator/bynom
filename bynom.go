@@ -45,10 +45,24 @@ type Eater interface {
 // Relevance allows to test if N-th byte is acceptable of ineligible.
 type Relevance interface {
 	// IsAcceptable tests if the N-th byte is acceptable.
-	IsAcceptable(int, byte) bool
+	// The function returns two values. The first value is the bool flag which designates if the byte
+	// in the N-th is acceptable. The second value designates whether the underlying sequence parsed or
+	// has more bytes.
+	//
+	// * The second value is less 0, the underlying sequence can include unlimited amount of bytes.
+	// * The second value is 0, the underlying sequence parsed.
+	// * The second value is greater 0, the underlying sequence has those bytes left.
+	IsAcceptable(int, byte) (bool, int)
 
 	// IsIneligible tests if the N-th byte is ineligible.
-	IsIneligible(int, byte) bool
+	// The function returns two values. The first value is the bool flag which designates if the byte
+	// in the N-th is ineligible. The second value designates whether the underlying sequence parsed or
+	// has more bytes.
+	//
+	// * The second value is less 0, the underlying sequence can include unlimited amount of bytes.
+	// * The second value is 0, the underlying sequence parsed.
+	// * The second value is greater 0, the underlying sequence has those bytes left.
+	IsIneligible(int, byte) (bool, int)
 }
 
 // Nom implements logic of how to read byte(s) from the plate.

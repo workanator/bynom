@@ -89,9 +89,14 @@ func WhileNot(r byte) Nom {
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileAcceptable(r Relevance) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
+		var startPos int
+		if startPos, err = p.TellPosition(ctx); err != nil {
+			return
+		}
+
 		var (
-			count int
-			b     byte
+			count, iterations int
+			b                 byte
 		)
 		for {
 			if b, err = p.PeekByte(ctx); err != nil {
@@ -103,7 +108,17 @@ func WhileAcceptable(r Relevance) Nom {
 				}
 				return
 			}
-			if !r.IsAcceptable(count, b) {
+
+			var (
+				good      bool
+				leftBytes int
+			)
+			if good, leftBytes = r.IsAcceptable(count, b); !good {
+				if iterations > 0 {
+					_ = p.SeekPosition(ctx, startPos)
+				} else if leftBytes == -1 && count > 0 {
+					iterations++ // That is the infinite sequence and some bytes were read from it.
+				}
 				break
 			}
 
@@ -111,8 +126,16 @@ func WhileAcceptable(r Relevance) Nom {
 				return
 			}
 			count++
+
+			if leftBytes == 0 {
+				if startPos, err = p.TellPosition(ctx); err != nil {
+					return
+				}
+				count = 0
+				iterations++
+			}
 		}
-		if count == 0 {
+		if iterations == 0 {
 			return ErrExpectationFailed{
 				Expected: r,
 				Have:     b,
@@ -128,9 +151,14 @@ func WhileAcceptable(r Relevance) Nom {
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileIneligible(r Relevance) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
+		var startPos int
+		if startPos, err = p.TellPosition(ctx); err != nil {
+			return
+		}
+
 		var (
-			count int
-			b     byte
+			count, iterations int
+			b                 byte
 		)
 		for {
 			if b, err = p.PeekByte(ctx); err != nil {
@@ -142,7 +170,17 @@ func WhileIneligible(r Relevance) Nom {
 				}
 				return
 			}
-			if !r.IsIneligible(count, b) {
+
+			var (
+				bad       bool
+				leftBytes int
+			)
+			if bad, leftBytes = r.IsIneligible(count, b); !bad {
+				if iterations > 0 {
+					_ = p.SeekPosition(ctx, startPos)
+				} else if leftBytes == -1 && count > 0 {
+					iterations++ // That is the infinite sequence and some bytes were read from it.
+				}
 				break
 			}
 
@@ -150,8 +188,16 @@ func WhileIneligible(r Relevance) Nom {
 				return
 			}
 			count++
+
+			if leftBytes == 0 {
+				if startPos, err = p.TellPosition(ctx); err != nil {
+					return
+				}
+				count = 0
+				iterations++
+			}
 		}
-		if count == 0 {
+		if iterations == 0 {
 			return ErrExpectationFailed{
 				Expected: r,
 				Have:     b,

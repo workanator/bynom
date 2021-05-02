@@ -9,13 +9,13 @@ func Single(b byte) SingleByte {
 }
 
 // IsAcceptable tests if the byte v equals the instance.
-func (b SingleByte) IsAcceptable(_ int, v byte) bool {
-	return byte(b) == v
+func (b SingleByte) IsAcceptable(_ int, v byte) (bool, int) {
+	return byte(b) == v, -1
 }
 
 // IsIneligible tests if the the byte v does not equal the instance.
-func (b SingleByte) IsIneligible(_ int, v byte) bool {
-	return byte(b) != v
+func (b SingleByte) IsIneligible(_ int, v byte) (bool, int) {
+	return byte(b) != v, -1
 }
 
 // Implement fmt.Stringer interface.
