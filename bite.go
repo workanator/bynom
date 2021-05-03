@@ -46,7 +46,14 @@ func (bite *Bite) Eat(ctx context.Context, p Plate) (err error) {
 			ctxLen = DefaultParseContextLen
 		}
 
-		return NewParseError(ctx, err, p, startPos, errPos, ctxLen)
+		var e = &ErrParseFailed{
+			Err:      err,
+			StartPos: startPos,
+			EndPos:   errPos,
+		}
+		e.TakeContext(ctx, p, startPos, errPos, ctxLen)
+
+		return e
 	}
 
 	return
