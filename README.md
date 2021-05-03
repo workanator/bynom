@@ -34,7 +34,7 @@ var hour, minute, second, amPm []byte               // Parsing result will be he
 
 digits := WhileAcceptable(span.Range('0', '9'))     // Allow only bytes in the range '0'..'9'
 twoDigits := RequireLen(2, digits)                  // Require the sequence to be 2 bytes in length
-time24 := Group(
+time24 := Sequence(
   Take(into.Bytes(&hour), twoDigits),               // Parse hour and write the result in `hour`
   Expect(':'),                                      // Expect ':' after the hour
   Take(into.Bytes(&minute), twoDigits),             // Parse minute and write the result in `minute`
@@ -43,7 +43,7 @@ time24 := Group(
     Take(into.Bytes(&second), twoDigits),           // Parse second and write the result in `second`
   ),
 )
-time12 := Group(
+time12 := Sequence(
   time24,                                           // Extend 24-hour time parser
   Optional(While(' ')),                             // Skip optional whitespace
   Take(                                             // Parse AM/PM part

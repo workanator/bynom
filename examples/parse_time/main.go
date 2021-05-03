@@ -32,21 +32,21 @@ var (
 )
 
 var (
-	isoDate = Group(
+	isoDate = Sequence(
 		Take(into.Bytes(&year), fourDigits),
 		Expect('-'),
 		Take(into.Bytes(&month), twoDigits),
 		Expect('-'),
 		Take(into.Bytes(&day), twoDigits),
 	)
-	deDate = Group(
+	deDate = Sequence(
 		Take(into.Bytes(&day), twoDigits),
 		Expect('.'),
 		Take(into.Bytes(&month), twoDigits),
 		Expect('.'),
 		Take(into.Bytes(&year), Switch(fourDigits, twoDigits)),
 	)
-	usDate = Group(
+	usDate = Sequence(
 		Take(into.Bytes(&month), twoDigits),
 		Expect('/'),
 		Take(into.Bytes(&day), twoDigits),
@@ -61,7 +61,7 @@ var (
 )
 
 var (
-	time24 = Group(
+	time24 = Sequence(
 		Take(into.Bytes(&hour), twoDigits),
 		Expect(':'),
 		Take(into.Bytes(&minute), twoDigits),
@@ -70,7 +70,7 @@ var (
 			Take(into.Bytes(&second), twoDigits),
 		),
 	)
-	time12 = Group(
+	time12 = Sequence(
 		time24,
 		Optional(
 			While(' '),

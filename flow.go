@@ -124,8 +124,8 @@ func Repeat(n int, noms ...Nom) Nom {
 	}
 }
 
-// Group runs all parsers noms until all finished or at least one failed.
-func Group(noms ...Nom) Nom {
+// Sequence runs all parsers noms until all finished or at least one failed.
+func Sequence(noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		for _, nom := range noms {
 			if err = nom(ctx, p); err != nil {
