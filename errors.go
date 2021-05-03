@@ -75,7 +75,7 @@ func (e *ErrParseFailed) Unwrap() error {
 	return e.Err
 }
 
-func (e *ErrParseFailed) TakeContext(ctx context.Context, p Plate, startPos, endPos, chunkLen int) {
+func (e *ErrParseFailed) CopyContext(ctx context.Context, p Plate, startPos, endPos, chunkLen int) {
 	var ctxLen = endPos - startPos
 	if ctxLen <= chunkLen {
 		if buf, err := p.ByteSlice(ctx, startPos, endPos); err == nil {

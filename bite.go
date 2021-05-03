@@ -51,7 +51,7 @@ func (bite *Bite) Eat(ctx context.Context, p Plate) (err error) {
 			StartPos: startPos,
 			EndPos:   errPos,
 		}
-		e.TakeContext(ctx, p, startPos, errPos, ctxLen)
+		e.CopyContext(ctx, p, startPos, errPos, ctxLen)
 
 		return e
 	}
