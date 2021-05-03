@@ -9,6 +9,8 @@ import (
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func While(r byte) Nom {
+	const funcName = "While"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
@@ -17,27 +19,30 @@ func While(r byte) Nom {
 		for {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
-					if count == 0 {
-						return io.ErrUnexpectedEOF
+					if count > 0 {
+						return nil
 					}
-					return nil
+					err = io.ErrUnexpectedEOF
 				}
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 			if b != r {
 				break
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 			count++
 		}
 		if count == 0 {
-			return ErrExpectationFailed{
-				Expected: r,
-				Have:     b,
-			}
+			return WrapBreadcrumb(
+				ErrExpectationFailed{
+					Expected: r,
+					Have:     b,
+				},
+				funcName,
+			)
 		}
 
 		return
@@ -48,6 +53,8 @@ func While(r byte) Nom {
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileNot(r byte) Nom {
+	const funcName = "WhileNot"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
@@ -56,28 +63,31 @@ func WhileNot(r byte) Nom {
 		for {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
-					if count == 0 {
-						return io.ErrUnexpectedEOF
+					if count > 0 {
+						return nil
 					}
-					return nil
+					err = io.ErrUnexpectedEOF
 				}
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 			if b == r {
 				break
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 			count++
 		}
 		if count == 0 {
-			return ErrExpectationFailed{
-				Expected: r,
-				Have:     b,
-				Not:      true,
-			}
+			return WrapBreadcrumb(
+				ErrExpectationFailed{
+					Expected: r,
+					Have:     b,
+					Not:      true,
+				},
+				funcName,
+			)
 		}
 
 		return
@@ -88,10 +98,12 @@ func WhileNot(r byte) Nom {
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileAcceptable(r Relevance) Nom {
+	const funcName = "WhileAcceptable"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return
+			return WrapBreadcrumb(err, funcName)
 		}
 
 		var (
@@ -102,11 +114,11 @@ func WhileAcceptable(r Relevance) Nom {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 && iterations == 0 {
-						return io.ErrUnexpectedEOF
+						return WrapBreadcrumb(io.ErrUnexpectedEOF, funcName)
 					}
 					return nil
 				}
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 
 			var (
@@ -121,23 +133,26 @@ func WhileAcceptable(r Relevance) Nom {
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 			count++
 
 			if leftBytes == 0 {
 				if startPos, err = p.TellPosition(ctx); err != nil {
-					return
+					return WrapBreadcrumb(err, funcName)
 				}
 				count = 0
 				iterations++
 			}
 		}
 		if iterations == 0 {
-			return ErrExpectationFailed{
-				Expected: r,
-				Have:     b,
-			}
+			return WrapBreadcrumb(
+				ErrExpectationFailed{
+					Expected: r,
+					Have:     b,
+				},
+				funcName,
+			)
 		}
 
 		return
@@ -148,10 +163,12 @@ func WhileAcceptable(r Relevance) Nom {
 // The function reads while the condition met or io.EOF encountered. The function does not propagate io.EOF.
 // The function expects to read at least one byte which meets the condition, otherwise it returns io.ErrUnexpectedEOF.
 func WhileIneligible(r Relevance) Nom {
+	const funcName = "WhileIneligible"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return
+			return WrapBreadcrumb(err, funcName)
 		}
 
 		var (
@@ -162,11 +179,11 @@ func WhileIneligible(r Relevance) Nom {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 && iterations == 0 {
-						return io.ErrUnexpectedEOF
+						return WrapBreadcrumb(io.ErrUnexpectedEOF, funcName)
 					}
 					return nil
 				}
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 
 			var (
@@ -181,24 +198,27 @@ func WhileIneligible(r Relevance) Nom {
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return
+				return WrapBreadcrumb(err, funcName)
 			}
 			count++
 
 			if leftBytes == 0 {
 				if startPos, err = p.TellPosition(ctx); err != nil {
-					return
+					return WrapBreadcrumb(err, funcName)
 				}
 				count = 0
 				iterations++
 			}
 		}
 		if iterations == 0 {
-			return ErrExpectationFailed{
-				Expected: r,
-				Have:     b,
-				Not:      true,
-			}
+			return WrapBreadcrumb(
+				ErrExpectationFailed{
+					Expected: r,
+					Have:     b,
+					Not:      true,
+				},
+				funcName,
+			)
 		}
 
 		return

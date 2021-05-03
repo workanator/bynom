@@ -52,6 +52,7 @@ func (bite *Bite) Eat(ctx context.Context, p Plate) (err error) {
 			EndPos:   errPos,
 		}
 		e.CopyContext(ctx, p, startPos, errPos, ctxLen)
+		e.UnwrapBreadcrumbs()
 
 		return e
 	}
