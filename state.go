@@ -9,9 +9,9 @@ func ChangeState(v int64, fns ...func(int64) error) Nom {
 	const funcName = "ChangeState"
 
 	return func(context.Context, Plate) (err error) {
-		for _, mod := range fns {
+		for i, mod := range fns {
 			if err = mod(v); err != nil {
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, i)
 			}
 		}
 		return
@@ -24,13 +24,14 @@ func RequireState(v int64, fns ...func(int64) bool) Nom {
 	const funcName = "RequireState"
 
 	return func(context.Context, Plate) error {
-		for _, test := range fns {
+		for i, test := range fns {
 			if !test(v) {
 				return WrapBreadcrumb(
 					ErrStateTestFailed{
 						Assert: v,
 					},
 					funcName,
+					i,
 				)
 			}
 		}

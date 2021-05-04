@@ -158,23 +158,20 @@ func (e *ErrBreadcrumb) Error() string {
 	return e.Breadcrumb.String() + ": " + e.Err.Error()
 }
 
-func WrapBreadcrumb(err error, name string) *ErrBreadcrumb {
+func WrapBreadcrumb(err error, name string, index int) *ErrBreadcrumb {
 	return &ErrBreadcrumb{
 		Err: err,
 		Breadcrumb: Breadcrumb{
 			Name:     name,
-			Index:    -1,
+			Index:    index,
 			StartPos: -1,
 			EndPos:   -1,
 		},
 	}
 }
 
-func ExtendBreadcrumb(err error, index int, startPos, endPos int) error {
+func ExtendBreadcrumb(err error, startPos, endPos int) error {
 	if v, ok := err.(*ErrBreadcrumb); ok {
-		if index >= 0 {
-			v.Index = index
-		}
 		if startPos >= 0 {
 			v.StartPos = startPos
 		}

@@ -9,9 +9,9 @@ func Signal(data interface{}, fns ...func(context.Context, interface{}) error) N
 	const funcName = "Signal"
 
 	return func(ctx context.Context, p Plate) (err error) {
-		for _, fn := range fns {
+		for i, fn := range fns {
 			if err = fn(ctx, data); err != nil {
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, i)
 			}
 		}
 

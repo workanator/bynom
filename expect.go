@@ -13,7 +13,7 @@ func Expect(r byte) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 		if b == r {
 			return nil
@@ -25,6 +25,7 @@ func Expect(r byte) Nom {
 				Have:     b,
 			},
 			funcName,
+			-1,
 		)
 	}
 }
@@ -37,7 +38,7 @@ func ExpectNot(r byte) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 		if b != r {
 			return nil
@@ -49,6 +50,7 @@ func ExpectNot(r byte) Nom {
 				Not:      true,
 			},
 			funcName,
+			-1,
 		)
 	}
 }
@@ -71,7 +73,7 @@ func ExpectAcceptable(r Relevance) Nom {
 					}
 					err = io.ErrUnexpectedEOF
 				}
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 
 			var (
@@ -95,6 +97,7 @@ func ExpectAcceptable(r Relevance) Nom {
 					Have:     b,
 				},
 				funcName,
+				-1,
 			)
 		}
 
@@ -120,7 +123,7 @@ func ExpectIneligible(r Relevance) Nom {
 					}
 					err = io.ErrUnexpectedEOF
 				}
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 
 			var (
@@ -145,6 +148,7 @@ func ExpectIneligible(r Relevance) Nom {
 					Not:      true,
 				},
 				funcName,
+				-1,
 			)
 		}
 

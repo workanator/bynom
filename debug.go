@@ -14,11 +14,11 @@ func Debug(w io.Writer, msg string) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var pos int
 		if pos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		if _, err = fmt.Fprintf(w, "[% 5d] %s\n", pos, msg); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		return

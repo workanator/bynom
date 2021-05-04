@@ -13,26 +13,26 @@ func Take(fn Convert, noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		for i, nom := range noms {
 			if err = nom(ctx, p); err != nil {
-				return WrapBreadcrumb(ExtendBreadcrumb(err, i, startPos, -1), funcName)
+				return WrapBreadcrumb(ExtendBreadcrumb(err, startPos, -1), funcName, i)
 			}
 		}
 
 		var endPos int
 		if endPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		var s []byte
 		if s, err = p.ByteSlice(ctx, startPos, endPos); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 		if err = fn(s); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		return

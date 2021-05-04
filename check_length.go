@@ -11,18 +11,18 @@ func RequireLen(n int, noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		for _, nom := range noms {
 			if err = nom(ctx, p); err != nil {
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 		}
 
 		var endPos int
 		if endPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		var l = endPos - startPos
@@ -34,6 +34,7 @@ func RequireLen(n int, noms ...Nom) Nom {
 					Msg:      "invalid length",
 				},
 				funcName,
+				-1,
 			)
 		}
 

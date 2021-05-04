@@ -10,13 +10,13 @@ func Switch(noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		for i, nom := range noms {
 			if i > 0 {
 				if err = p.SeekPosition(ctx, startPos); err != nil {
-					return ExtendBreadcrumb(WrapBreadcrumb(err, funcName), i, startPos, -1)
+					return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, -1)
 				}
 			}
 
@@ -25,7 +25,7 @@ func Switch(noms ...Nom) Nom {
 			}
 		}
 		if err != nil {
-			return ExtendBreadcrumb(WrapBreadcrumb(err, funcName), -1, startPos, -1)
+			return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, -1), startPos, -1)
 		}
 
 		return
@@ -40,17 +40,17 @@ func When(test Nom, noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		if err = test(ctx, p); err != nil {
 			_ = p.SeekPosition(ctx, startPos)
-			return ExtendBreadcrumb(WrapBreadcrumb(err, funcName), -1, startPos, -1)
+			return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, -1), startPos, -1)
 		}
 
 		for i, nom := range noms {
 			if err = nom(ctx, p); err != nil {
-				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName), i, startPos, -1)
+				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, -1)
 			}
 		}
 
@@ -66,12 +66,12 @@ func WhenNot(test Nom, noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		if err = test(ctx, p); err == nil {
 			if err = p.SeekPosition(ctx, startPos); err != nil {
-				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName), -1, startPos, -1)
+				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, -1), startPos, -1)
 			}
 			return
 		} else {
@@ -80,7 +80,7 @@ func WhenNot(test Nom, noms ...Nom) Nom {
 
 		for i, nom := range noms {
 			if err = nom(ctx, p); err != nil {
-				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName), i, startPos, -1)
+				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, -1)
 			}
 		}
 
@@ -97,13 +97,13 @@ func Optional(noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		for i, nom := range noms {
 			if err = nom(ctx, p); err != nil {
 				if err = p.SeekPosition(ctx, startPos); err != nil {
-					return ExtendBreadcrumb(WrapBreadcrumb(err, funcName), i, startPos, -1)
+					return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, -1)
 				}
 				return nil
 			}
@@ -122,21 +122,21 @@ func Repeat(n int, noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 	TimesLoop:
 		for i := 0; i < n; i++ {
 			for j, nom := range noms {
 				if err = nom(ctx, p); err != nil {
-					err = ExtendBreadcrumb(err, j, startPos, -1)
+					err = WrapBreadcrumb(ExtendBreadcrumb(err, startPos, -1), funcName, j)
 					break TimesLoop
 				}
 			}
 		}
 		if err != nil {
 			_ = p.SeekPosition(ctx, startPos)
-			return WrapBreadcrumb(err, funcName)
+			return
 		}
 
 		return
@@ -150,7 +150,7 @@ func Sequence(noms ...Nom) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		for i, nom := range noms {
 			if err = nom(ctx, p); err != nil {
-				return WrapBreadcrumb(ExtendBreadcrumb(err, i, -1, -1), funcName)
+				return WrapBreadcrumb(err, funcName, i)
 			}
 		}
 

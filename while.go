@@ -24,14 +24,14 @@ func While(r byte) Nom {
 					}
 					err = io.ErrUnexpectedEOF
 				}
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 			if b != r {
 				break
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 			count++
 		}
@@ -42,6 +42,7 @@ func While(r byte) Nom {
 					Have:     b,
 				},
 				funcName,
+				-1,
 			)
 		}
 
@@ -68,14 +69,14 @@ func WhileNot(r byte) Nom {
 					}
 					err = io.ErrUnexpectedEOF
 				}
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 			if b == r {
 				break
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 			count++
 		}
@@ -87,6 +88,7 @@ func WhileNot(r byte) Nom {
 					Not:      true,
 				},
 				funcName,
+				-1,
 			)
 		}
 
@@ -103,7 +105,7 @@ func WhileAcceptable(r Relevance) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		var (
@@ -114,11 +116,11 @@ func WhileAcceptable(r Relevance) Nom {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 && iterations == 0 {
-						return WrapBreadcrumb(io.ErrUnexpectedEOF, funcName)
+						return WrapBreadcrumb(io.ErrUnexpectedEOF, funcName, iterations)
 					}
 					return nil
 				}
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, iterations)
 			}
 
 			var (
@@ -133,13 +135,13 @@ func WhileAcceptable(r Relevance) Nom {
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, iterations)
 			}
 			count++
 
 			if leftBytes == 0 {
 				if startPos, err = p.TellPosition(ctx); err != nil {
-					return WrapBreadcrumb(err, funcName)
+					return WrapBreadcrumb(err, funcName, iterations)
 				}
 				count = 0
 				iterations++
@@ -152,6 +154,7 @@ func WhileAcceptable(r Relevance) Nom {
 					Have:     b,
 				},
 				funcName,
+				iterations,
 			)
 		}
 
@@ -168,7 +171,7 @@ func WhileIneligible(r Relevance) Nom {
 	return func(ctx context.Context, p Plate) (err error) {
 		var startPos int
 		if startPos, err = p.TellPosition(ctx); err != nil {
-			return WrapBreadcrumb(err, funcName)
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 
 		var (
@@ -179,11 +182,11 @@ func WhileIneligible(r Relevance) Nom {
 			if b, err = p.PeekByte(ctx); err != nil {
 				if err == io.EOF {
 					if count == 0 && iterations == 0 {
-						return WrapBreadcrumb(io.ErrUnexpectedEOF, funcName)
+						return WrapBreadcrumb(io.ErrUnexpectedEOF, funcName, iterations)
 					}
 					return nil
 				}
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, iterations)
 			}
 
 			var (
@@ -198,13 +201,13 @@ func WhileIneligible(r Relevance) Nom {
 			}
 
 			if _, err = p.NextByte(ctx); err != nil {
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, iterations)
 			}
 			count++
 
 			if leftBytes == 0 {
 				if startPos, err = p.TellPosition(ctx); err != nil {
-					return WrapBreadcrumb(err, funcName)
+					return WrapBreadcrumb(err, funcName, iterations)
 				}
 				count = 0
 				iterations++
@@ -218,6 +221,7 @@ func WhileIneligible(r Relevance) Nom {
 					Not:      true,
 				},
 				funcName,
+				iterations,
 			)
 		}
 

@@ -16,7 +16,7 @@ func Any() Nom {
 				if err == io.EOF {
 					return nil
 				}
-				return WrapBreadcrumb(err, funcName)
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 		}
 	}
