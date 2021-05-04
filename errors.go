@@ -57,7 +57,7 @@ type ErrParseFailed struct {
 	StartPos    int
 	EndPos      int
 	Context     []byte
-	Breadcrumbs []*ErrBreadcrumb
+	Breadcrumbs []Breadcrumb
 }
 
 func (e *ErrParseFailed) Error() string {
@@ -79,7 +79,7 @@ func (e *ErrParseFailed) Error() string {
 			} else {
 				sb.WriteString(", ")
 			}
-			sb.WriteString(b.Breadcrumb.NameWithIndex())
+			sb.WriteString(b.String())
 		}
 	}
 
@@ -141,7 +141,7 @@ func (e *ErrParseFailed) UnwrapBreadcrumbs() {
 		}
 
 		if v, ok := e.Err.(*ErrBreadcrumb); ok {
-			e.Breadcrumbs = append(e.Breadcrumbs, v)
+			e.Breadcrumbs = append(e.Breadcrumbs, v.Breadcrumb)
 			e.Err = v.Err
 		} else {
 			break
@@ -195,27 +195,27 @@ type Breadcrumb struct {
 
 func (b Breadcrumb) String() string {
 	var sb strings.Builder
-	sb.WriteString(b.Name)
 	if b.Index >= 0 {
 		sb.WriteString("[")
 		sb.WriteString(strconv.Itoa(b.Index))
 		sb.WriteString("]")
 	}
-	if b.StartPos >= 0 {
-		sb.WriteString(": start position: ")
+	sb.WriteString(b.Name)
+	if b.StartPos >= 0 && b.EndPos >= 0 {
+		sb.WriteByte('{')
 		sb.WriteString(strconv.Itoa(b.StartPos))
-	}
-	if b.EndPos >= 0 {
-		sb.WriteString(": end position: ")
+		sb.WriteByte(':')
 		sb.WriteString(strconv.Itoa(b.EndPos))
+		sb.WriteByte('}')
+	} else if b.StartPos >= 0 {
+		sb.WriteByte('{')
+		sb.WriteString(strconv.Itoa(b.StartPos))
+		sb.WriteString(":}")
+	} else if b.EndPos >= 0 {
+		sb.WriteString("{:")
+		sb.WriteString(strconv.Itoa(b.EndPos))
+		sb.WriteByte('}')
 	}
 
 	return sb.String()
-}
-
-func (b Breadcrumb) NameWithIndex() string {
-	if b.Index >= 0 {
-		return fmt.Sprintf("%s[%d]", b.Name, b.Index)
-	}
-	return b.Name
 }
