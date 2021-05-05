@@ -49,8 +49,14 @@ func When(test Nom, noms ...Nom) Nom {
 		}
 
 		for i, nom := range noms {
-			if err = nom(ctx, p); err != nil {
+			var nomStartPos int
+			if nomStartPos, err = p.TellPosition(ctx); err != nil {
 				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, -1)
+			}
+
+			if err = nom(ctx, p); err != nil {
+				var nomErrPos, _ = p.TellPosition(ctx)
+				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), nomStartPos, nomErrPos)
 			}
 		}
 
@@ -79,8 +85,14 @@ func WhenNot(test Nom, noms ...Nom) Nom {
 		}
 
 		for i, nom := range noms {
-			if err = nom(ctx, p); err != nil {
+			var nomStartPos int
+			if nomStartPos, err = p.TellPosition(ctx); err != nil {
 				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, -1)
+			}
+
+			if err = nom(ctx, p); err != nil {
+				var nomEndPos, _ = p.TellPosition(ctx)
+				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), nomStartPos, nomEndPos)
 			}
 		}
 
@@ -128,8 +140,14 @@ func Repeat(n int, noms ...Nom) Nom {
 	TimesLoop:
 		for i := 0; i < n; i++ {
 			for j, nom := range noms {
+				var nomStartPos int
+				if nomStartPos, err = p.TellPosition(ctx); err != nil {
+					return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, -1)
+				}
+
 				if err = nom(ctx, p); err != nil {
-					err = WrapBreadcrumb(ExtendBreadcrumb(err, startPos, -1), funcName, j)
+					var nomErrPos, _ = p.TellPosition(ctx)
+					err = WrapBreadcrumb(ExtendBreadcrumb(err, nomStartPos, nomErrPos), funcName, j)
 					break TimesLoop
 				}
 			}
@@ -149,8 +167,14 @@ func Sequence(noms ...Nom) Nom {
 
 	return func(ctx context.Context, p Plate) (err error) {
 		for i, nom := range noms {
-			if err = nom(ctx, p); err != nil {
+			var nomStartPos int
+			if nomStartPos, err = p.TellPosition(ctx); err != nil {
 				return WrapBreadcrumb(err, funcName, i)
+			}
+
+			if err = nom(ctx, p); err != nil {
+				var nomErrPos, _ = p.TellPosition(ctx)
+				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), nomStartPos, nomErrPos)
 			}
 		}
 

@@ -17,8 +17,15 @@ func Take(fn Convert, noms ...Nom) Nom {
 		}
 
 		for i, nom := range noms {
+			var nomStartPos int
+			if nomStartPos, err = p.TellPosition(ctx); err != nil {
+				return WrapBreadcrumb(err, funcName, i)
+			}
+
 			if err = nom(ctx, p); err != nil {
-				return WrapBreadcrumb(ExtendBreadcrumb(err, startPos, -1), funcName, i)
+				var nomErrPos, _ = p.TellPosition(ctx)
+				err = ExtendBreadcrumb(err, nomStartPos, nomErrPos)
+				return ExtendBreadcrumb(WrapBreadcrumb(err, funcName, i), startPos, nomErrPos)
 			}
 		}
 
