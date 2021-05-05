@@ -92,13 +92,13 @@ func (hf *HexFormatter) formatParseError(w io.Writer, e *bynom.ErrParseFailed) (
 		}
 	}
 
-	if len(e.Breadcrumbs) > 0 {
-		put("Breadcrumbs:")
+	if len(e.Stack) > 0 {
+		put("Stack:")
 
 		var detailsBuf [4]string
-		for i := len(e.Breadcrumbs) - 1; i >= 0; i-- {
+		for i := len(e.Stack) - 1; i >= 0; i-- {
 			var (
-				b       = e.Breadcrumbs[i]
+				b       = e.Stack[i]
 				details = detailsBuf[:0]
 			)
 			details = append(details, b.Name)

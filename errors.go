@@ -53,11 +53,11 @@ func (e ErrRequirementNotMet) Error() string {
 
 // ErrParseFailed contains the original error happened and the parse context.
 type ErrParseFailed struct {
-	Err         error
-	StartPos    int
-	EndPos      int
-	Context     *ParseContext
-	Breadcrumbs []Breadcrumb
+	Err      error
+	StartPos int
+	EndPos   int
+	Context  *ParseContext
+	Stack    []Breadcrumb
 }
 
 func (e *ErrParseFailed) Error() string {
@@ -70,9 +70,9 @@ func (e *ErrParseFailed) Error() string {
 		sb.WriteString(e.Context.String())
 	}
 
-	if len(e.Breadcrumbs) > 0 {
-		sb.WriteString(", breadcrumbs:")
-		for i, b := range e.Breadcrumbs {
+	if len(e.Stack) > 0 {
+		sb.WriteString(", stack:")
+		for i, b := range e.Stack {
 			if i == 0 {
 				sb.WriteByte(' ')
 			} else {
@@ -126,7 +126,7 @@ func (e *ErrParseFailed) UnwrapBreadcrumbs() {
 		}
 
 		if v, ok := e.Err.(*ErrBreadcrumb); ok {
-			e.Breadcrumbs = append(e.Breadcrumbs, v.Breadcrumb)
+			e.Stack = append(e.Stack, v.Breadcrumb)
 			e.Err = v.Err
 		} else {
 			break
