@@ -115,7 +115,7 @@ func main() {
 		err   error
 	)
 	if err = dateTime.Eat(context.Background(), input); err != nil {
-		var formatter = prettierr.TextFormatter{}
+		var formatter = prettierr.HexFormatter{}
 		_ = formatter.Format(os.Stderr, err)
 		return
 	}

@@ -8,29 +8,27 @@ import (
 	"github.com/workanator/bynom"
 )
 
-const DefaultIndent = "  "
-
-type TextFormatter struct {
+type HexFormatter struct {
 	Indent string // Details indentation.
 }
 
 // Format formats the error e into the writer w.
-func (tf *TextFormatter) Format(w io.Writer, e error) (err error) {
+func (hf *HexFormatter) Format(w io.Writer, e error) (err error) {
 	if w == nil || e == nil {
 		return
 	}
 
 	switch v := e.(type) {
 	case *bynom.ErrParseFailed:
-		err = tf.formatParseError(w, v)
+		err = hf.formatParseError(w, v)
 	default:
-		err = tf.formatGenericError(w, e)
+		err = hf.formatGenericError(w, e)
 	}
 
 	return
 }
 
-func (tf *TextFormatter) formatParseError(w io.Writer, e *bynom.ErrParseFailed) (err error) {
+func (hf *HexFormatter) formatParseError(w io.Writer, e *bynom.ErrParseFailed) (err error) {
 	var (
 		put = func(ss ...string) {
 			if err == nil {
@@ -44,7 +42,21 @@ func (tf *TextFormatter) formatParseError(w io.Writer, e *bynom.ErrParseFailed) 
 				}
 			}
 		}
-		indent = tf.getIndent()
+		putHex = func(indent string, p []byte) {
+			if err == nil {
+				var start, end, l = 0, 16, len(p)
+				for start < l {
+					if end > l {
+						end = l
+					}
+
+					put(indent, makeHexString(p[start:end]))
+					start += 16
+					end = start + 16
+				}
+			}
+		}
+		indent = hf.getIndent()
 	)
 
 	put("Error:")
@@ -56,24 +68,24 @@ func (tf *TextFormatter) formatParseError(w io.Writer, e *bynom.ErrParseFailed) 
 		put("Context:")
 		if e.Context.Parted {
 			if e.Context.HeadErr == nil && e.Context.TailErr == nil {
-				put(indent, string(e.Context.Head))
+				putHex(indent, e.Context.Head)
 				if e.Context.BytesRemain > 0 {
 					put(indent, "..[", strconv.Itoa(e.Context.BytesRemain), " bytes]..")
 				}
-				put(indent, string(e.Context.Tail))
+				putHex(indent, e.Context.Tail)
 			} else if e.Context.HeadErr == nil {
-				put(indent, string(e.Context.Head))
+				putHex(indent, e.Context.Head)
 				put(indent, "..[more bytes]")
 			} else if e.Context.TailErr == nil {
 				put(indent, "[more bytes]..")
-				put(indent, string(e.Context.Tail))
+				putHex(indent, e.Context.Tail)
 			} else {
 				put(indent, "head read error: ", e.Context.HeadErr.Error())
 				put(indent, "tail read error: ", e.Context.TailErr.Error())
 			}
 		} else {
 			if e.Context.HeadErr == nil {
-				put(indent, string(e.Context.Head))
+				putHex(indent, e.Context.Head)
 			} else {
 				put(indent, "read error: ", e.Context.HeadErr.Error())
 			}
@@ -107,7 +119,7 @@ func (tf *TextFormatter) formatParseError(w io.Writer, e *bynom.ErrParseFailed) 
 	return
 }
 
-func (tf *TextFormatter) formatGenericError(w io.Writer, e error) (err error) {
+func (hf *HexFormatter) formatGenericError(w io.Writer, e error) (err error) {
 	var put = func(ss ...string) {
 		if err == nil {
 			for _, s := range ss {
@@ -122,13 +134,60 @@ func (tf *TextFormatter) formatGenericError(w io.Writer, e error) (err error) {
 	}
 
 	put("Error:")
-	put(tf.getIndent(), e.Error())
+	put(hf.getIndent(), e.Error())
 	return
 }
 
-func (tf *TextFormatter) getIndent() string {
-	if len(tf.Indent) == 0 {
+func (hf *HexFormatter) getIndent() string {
+	if len(hf.Indent) == 0 {
 		return DefaultIndent
 	}
-	return tf.Indent
+	return hf.Indent
+}
+
+var hexChars = [16]byte{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'}
+
+func makeHexString(p []byte) string {
+	var (
+		sb strings.Builder
+		l  = len(p)
+	)
+	for i := 0; i < 16; i++ {
+		if i == 8 {
+			sb.WriteByte(' ')
+		}
+
+		if i < l {
+			var b = p[i]
+			sb.WriteByte(hexChars[(b&0xF0)>>4])
+			sb.WriteByte(hexChars[b&0x0F])
+			sb.WriteByte(' ')
+		} else {
+			sb.WriteByte(' ')
+			sb.WriteByte(' ')
+			sb.WriteByte(' ')
+		}
+	}
+
+	sb.WriteByte('|')
+	sb.WriteByte(' ')
+
+	for i := 0; i < 16; i++ {
+		if i == 8 {
+			sb.WriteByte(' ')
+		}
+
+		if i < l {
+			var b = p[i]
+			if b < ' ' {
+				sb.WriteByte('.')
+			} else {
+				sb.WriteByte(b)
+			}
+		} else {
+			sb.WriteByte(' ')
+		}
+	}
+
+	return sb.String()
 }
