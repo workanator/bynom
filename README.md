@@ -22,6 +22,7 @@ To install the package use `go get github.com/workanator/bynom`
 * **byte-oriented**: The basic type is _byte_ and parsers works with bytes and byte slices.
 * **zero-copy**: If a parser returns a subset of its input data, it will return a slice of that input, without copying.<sup>1</sup>
 * **conditional parsing**: Parsing can be conditional containing switches and optional parts.
+* **rich error details**: The package tries to provide as much information as possible on parsing error.
 
 <sup>1</sup> Depends on the implementation of `bynom.Plate`.
 
@@ -63,10 +64,53 @@ if err := dish.NewString(inputData); err != nil {
 
 See [examples](examples) for more examples.
 
+## Parsers
+
+Name             | Description
+:--------------- | :----------
+Any              | Reads bytes from the plate until io.EOF encountered.
+Expect           | Expects the next byte to be equal input.
+ExpectNot        | Expects the next byte to be not equal input.
+ExpectAcceptable | Expects the next set of bytes to be accepted by input.
+ExpectIneligible | Expects the next set of bytes to be declined by input.
+Optional         | Groups multiple parsers into one optional parser.
+Repeat           | Repeat the set of parsing N times.
+RequireLen       | Require the length of parsed byte sequnce to be equal input.
+Sequence         | Groups multiple parsers into one parser.
+Switch           | Converts multiple parsers into options. The first parser which returns success finishes the switch.
+Take             | Takes the parsed byte sequence into variable.
+When             | Runs the set of parsers when the first parser finishes with success.
+WhenNot          | Runs the set of parsers when the first parser finishes with error.
+While            | Parses while the next byte equals input.
+WhileNot         | Parses while the next byte does not equal input.
+WhileAcceptable  | Parses while the next set of bytes accepted by input.
+WhileIneligible  | Parses while the next set of bytes declined by input.
+
+## Error Formatting
+
+The parsing errors can be formatted using formatters from `prettierr` package. Here is an example of a parsing error formatted with `prettierr.HexFormatter`.
+
+```
+Error:
+  requirement not met: invalid length: expected 2, have 11
+Range:
+  start=0, end=11
+Context:
+  31 33 32 34 33 32 34 33  32 30 35                | 13243243 205     
+Stack:
+  5: RequireLen, start=0, end=11
+  4: Take[0], start=0, end=11
+  3: Sequence[0], start=0, end=11
+  2: Switch, start=0
+  1: When[0], start=0, end=11
+  0: Switch, start=0
+```
+
 ## To-Do
 
 * [x] Add support for "words".
-* [ ] Add Plate implementation from io.ReadSeeker.
+* [x] Provide more usable information on parsing error.
+* [ ] Add Plate implementation for io.ReadSeeker.
 * [ ] Add more tests.
 * [ ] Add benchmarks.
 * [ ] Add more examples.
