@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/workanator/bynom/prettierr"
+
 	. "github.com/workanator/bynom"
 	"github.com/workanator/bynom/dish"
 	"github.com/workanator/bynom/into"
@@ -113,7 +115,9 @@ func main() {
 		err   error
 	)
 	if err = dateTime.Eat(context.Background(), input); err != nil {
-		panic(err)
+		var formatter = prettierr.HexFormatter{}
+		_ = formatter.Format(os.Stderr, err)
+		return
 	}
 
 	if parts.AllSet(partDate) {

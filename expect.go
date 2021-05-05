@@ -8,44 +8,58 @@ import (
 // Expect reads the next byte from the plate and tests it against r.
 // If the byte read does not equal r the function will return ErrExpectationFailed.
 func Expect(r byte) Nom {
+	const funcName = "Expect"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(ctx); err != nil {
-			return
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 		if b == r {
 			return nil
 		}
 
-		return ErrExpectationFailed{
-			Expected: r,
-			Have:     b,
-		}
+		return WrapBreadcrumb(
+			ErrExpectationFailed{
+				Expected: r,
+				Have:     b,
+			},
+			funcName,
+			-1,
+		)
 	}
 }
 
 // ExpectNot reads the next byte from the plate and tests it against r.
 // If the byte read equals r the function will return ErrExpectationFailed.
 func ExpectNot(r byte) Nom {
+	const funcName = "ExpectNot"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var b byte
 		if b, err = p.NextByte(ctx); err != nil {
-			return
+			return WrapBreadcrumb(err, funcName, -1)
 		}
 		if b != r {
 			return nil
 		}
 
-		return ErrExpectationFailed{
-			Expected: r,
-			Not:      true,
-		}
+		return WrapBreadcrumb(
+			ErrExpectationFailed{
+				Expected: r,
+				Not:      true,
+			},
+			funcName,
+			-1,
+		)
 	}
 }
 
 // ExpectAcceptable reads the next byte from the plate and tests if it is acceptable by Relevance r.
 // If the byte read does not belong to the range the function will return ErrExpectationFailed.
 func ExpectAcceptable(r Relevance) Nom {
+	const funcName = "ExpectAcceptable"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
@@ -54,12 +68,12 @@ func ExpectAcceptable(r Relevance) Nom {
 		for {
 			if b, err = p.NextByte(ctx); err != nil {
 				if err == io.EOF {
-					if count == 0 {
-						return io.ErrUnexpectedEOF
+					if count > 0 {
+						return nil
 					}
-					return nil
+					err = io.ErrUnexpectedEOF
 				}
-				return
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 
 			var (
@@ -77,10 +91,14 @@ func ExpectAcceptable(r Relevance) Nom {
 			}
 		}
 		if count == 0 {
-			return ErrExpectationFailed{
-				Expected: r,
-				Have:     b,
-			}
+			return WrapBreadcrumb(
+				ErrExpectationFailed{
+					Expected: r,
+					Have:     b,
+				},
+				funcName,
+				-1,
+			)
 		}
 
 		return
@@ -90,6 +108,8 @@ func ExpectAcceptable(r Relevance) Nom {
 // ExpectIneligible reads the next byte from the plate and tests if it is ineligible by Relevance r.
 // If the byte read belongs to the range the function will return ErrExpectationFailed.
 func ExpectIneligible(r Relevance) Nom {
+	const funcName = "ExpectIneligible"
+
 	return func(ctx context.Context, p Plate) (err error) {
 		var (
 			count int
@@ -98,12 +118,12 @@ func ExpectIneligible(r Relevance) Nom {
 		for {
 			if b, err = p.NextByte(ctx); err != nil {
 				if err == io.EOF {
-					if count == 0 {
-						return io.ErrUnexpectedEOF
+					if count > 0 {
+						return nil
 					}
-					return nil
+					err = io.ErrUnexpectedEOF
 				}
-				return
+				return WrapBreadcrumb(err, funcName, -1)
 			}
 
 			var (
@@ -121,11 +141,15 @@ func ExpectIneligible(r Relevance) Nom {
 			}
 		}
 		if count == 0 {
-			return ErrExpectationFailed{
-				Expected: r,
-				Have:     b,
-				Not:      true,
-			}
+			return WrapBreadcrumb(
+				ErrExpectationFailed{
+					Expected: r,
+					Have:     b,
+					Not:      true,
+				},
+				funcName,
+				-1,
+			)
 		}
 
 		return
